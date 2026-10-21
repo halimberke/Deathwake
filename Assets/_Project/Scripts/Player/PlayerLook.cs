@@ -21,6 +21,13 @@ namespace Game.Player
         [SerializeField] private bool lockCursorOnEnable = true;
 
         private float pitch;
+        private bool inputBlocked;
+
+        // Fare yok sayılır, imleç kilitli kalır. Örnek: zaman hızlandırılırken.
+        public void SetInputBlocked(bool blocked)
+        {
+            inputBlocked = blocked;
+        }
 
         private void OnEnable()
         {
@@ -40,6 +47,11 @@ namespace Game.Player
 
         private void Update()
         {
+            if (inputBlocked)
+            {
+                return;
+            }
+
             // Fare deltası zaten kare başına gelir. Time.deltaTime ile çarpılmaz.
             Vector2 delta = lookAction.action.ReadValue<Vector2>() * sensitivity;
 

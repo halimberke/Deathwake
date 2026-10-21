@@ -27,6 +27,13 @@ namespace Game.Player
         private CharacterController controller;
         private Vector3 horizontalVelocity;
         private float verticalVelocity;
+        private bool inputBlocked;
+
+        // Girdi yok sayılır ama yerçekimi ve yavaşlama sürer. Örnek: zaman hızlandırılırken.
+        public void SetInputBlocked(bool blocked)
+        {
+            inputBlocked = blocked;
+        }
 
         private void Awake()
         {
@@ -58,7 +65,7 @@ namespace Game.Player
 
         private void UpdateHorizontal()
         {
-            Vector2 input = moveAction.action.ReadValue<Vector2>();
+            Vector2 input = inputBlocked ? Vector2.zero : moveAction.action.ReadValue<Vector2>();
 
             // Girdiyi karakterin baktığı yöne göre dünya uzayına çevir.
             Vector3 wishDirection = transform.right * input.x + transform.forward * input.y;
@@ -83,7 +90,7 @@ namespace Game.Player
                 verticalVelocity = groundedStickVelocity;
             }
 
-            if (isGrounded && jumpAction.action.WasPressedThisFrame())
+            if (isGrounded && !inputBlocked && jumpAction.action.WasPressedThisFrame())
             {
                 // v = sqrt(2 * g * h) formülü. Gravity negatif olduğu için -2 ile çarpılır.
                 verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);

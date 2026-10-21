@@ -1207,6 +1207,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Chamber.ChamberStatusUI
   chamber: {fileID: 2040017537}
   label: {fileID: 977695621}
+  timeControl: {fileID: 2040017541}
+  fastForwardHint: "[F] h\u0131zland\u0131r"
 --- !u!114 &977695621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3187,6 +3189,7 @@ GameObject:
   - component: {fileID: 2040017538}
   - component: {fileID: 2040017537}
   - component: {fileID: 2040017540}
+  - component: {fileID: 2040017541}
   m_Layer: 0
   m_Name: Chamber
   m_TagString: Untagged
@@ -3295,6 +3298,49 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Echo.EchoSpawner
   chamber: {fileID: 2040017537}
   ghostPrefab: {fileID: 1936677709670845836, guid: 16750edecd325194f941ec26baebc3ca, type: 3}
+--- !u!114 &2040017541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2040017536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a55df7764653394eaf94bc30c4d0be5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Chamber.ChamberTimeControl
+  chamber: {fileID: 2040017537}
+  fastForwardAction: {fileID: 725429103419120481, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  speed: 4
+  requireFirstDeath: 1
+  onFastForwardChanged:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1224450628}
+        m_TargetAssemblyTypeName: Game.Player.PlayerMovement, Assembly-CSharp
+        m_MethodName: SetInputBlocked
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1224450627}
+        m_TargetAssemblyTypeName: Game.Player.PlayerLook, Assembly-CSharp
+        m_MethodName: SetInputBlocked
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2082256124
 GameObject:
   m_ObjectHideFlags: 0
