@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Chamber_Prototype
   m_EditorClassIdentifier: Assembly-CSharp::Game.Chamber.ChamberDefinition
   displayName: Prototip
-  attemptDuration: 15
+  attemptDuration: 45
   maxEchoes: 1

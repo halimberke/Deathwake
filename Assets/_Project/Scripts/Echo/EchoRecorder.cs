@@ -26,6 +26,8 @@ namespace Game.Echo
             chamber.StateChanged += HandleStateChanged;
             interactor.Interacted += HandleInteracted;
             interactor.Dropped += HandleDropped;
+            interactor.HoldStarted += HandleHoldStarted;
+            interactor.HoldEnded += HandleHoldEnded;
         }
 
         private void OnDisable()
@@ -33,6 +35,8 @@ namespace Game.Echo
             chamber.StateChanged -= HandleStateChanged;
             interactor.Interacted -= HandleInteracted;
             interactor.Dropped -= HandleDropped;
+            interactor.HoldStarted -= HandleHoldStarted;
+            interactor.HoldEnded -= HandleHoldEnded;
         }
 
         // Hareket Update'te yapıldığı için duruş LateUpdate'te, karenin son hâliyle okunur.
@@ -92,26 +96,46 @@ namespace Game.Echo
 
         private void HandleInteracted(IInteractable target)
         {
+            AddTargetEvent(EchoEventType.Interact, target as Component);
+        }
+
+        private void HandleHoldStarted(IHoldable target)
+        {
+            AddTargetEvent(EchoEventType.HoldStart, target as Component);
+        }
+
+        private void HandleDropped()
+        {
+            AddEvent(EchoEventType.Drop, null);
+        }
+
+        private void HandleHoldEnded()
+        {
+            AddEvent(EchoEventType.HoldEnd, null);
+        }
+
+        private void AddTargetEvent(EchoEventType type, Component target)
+        {
             if (current == null)
             {
                 return;
             }
 
-            InteractableId id = (target as Component)?.GetComponent<InteractableId>();
+            InteractableId id = target != null ? target.GetComponent<InteractableId>() : null;
             if (id == null)
             {
-                Debug.LogWarning($"{target} nesnesinde InteractableId yok; yankı bu etkileşimi tekrar edemez.", target as Component);
+                Debug.LogWarning($"{target} nesnesinde InteractableId yok; yankı bu eylemi tekrar edemez.", target);
                 return;
             }
 
-            current.AddEvent(new EchoEvent(chamber.Clock.Time, EchoEventType.Interact, id.Id));
+            AddEvent(type, id.Id);
         }
 
-        private void HandleDropped()
+        private void AddEvent(EchoEventType type, string targetId)
         {
             if (current != null)
             {
-                current.AddEvent(new EchoEvent(chamber.Clock.Time, EchoEventType.Drop, null));
+                current.AddEvent(new EchoEvent(chamber.Clock.Time, type, targetId));
             }
         }
 

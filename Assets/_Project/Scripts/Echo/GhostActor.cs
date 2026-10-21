@@ -19,6 +19,7 @@ namespace Game.Echo
         private int sampleCursor;
         private int eventCursor;
         private bool finished;
+        private IHoldable activeHold;
 
         public HandSlot Hand => hand;
 
@@ -108,7 +109,46 @@ namespace Game.Echo
                         LogSkipped(echoEvent, "elinde bırakacak eşya yok");
                     }
                     break;
+
+                case EchoEventType.HoldStart:
+                    ExecuteHoldStart(echoEvent);
+                    break;
+
+                case EchoEventType.HoldEnd:
+                    ReleaseHold();
+                    break;
             }
+        }
+
+        private void ExecuteHoldStart(EchoEvent echoEvent)
+        {
+            if (!InteractableRegistry.TryGet(echoEvent.TargetId, out InteractableId id))
+            {
+                LogSkipped(echoEvent, "hedef bulunamadı");
+                return;
+            }
+
+            IHoldable target = id.GetComponent<IHoldable>();
+            if (target == null || !target.CanHold(this))
+            {
+                LogSkipped(echoEvent, $"{id.name} tutulamıyor");
+                return;
+            }
+
+            ReleaseHold();
+            target.BeginHold(this);
+            activeHold = target;
+        }
+
+        private void ReleaseHold()
+        {
+            if (activeHold == null)
+            {
+                return;
+            }
+
+            activeHold.EndHold(this);
+            activeHold = null;
         }
 
         // Paradoks kuralı: yapılamayan adım atlanır, sonucu doğal olarak gelir.
@@ -134,7 +174,8 @@ namespace Game.Echo
         {
             finished = true;
 
-            // Kayıt ölümle bitti: elindeki eşya o noktada düşer.
+            // Kayıt ölümle bitti: tuttuğu düğmeyi bırakır, elindeki eşya o noktada düşer.
+            ReleaseHold();
             if (hand != null && hand.HeldItem != null)
             {
                 hand.Drop();

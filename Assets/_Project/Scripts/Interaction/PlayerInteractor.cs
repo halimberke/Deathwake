@@ -28,11 +28,16 @@ namespace Game.Interaction
         // Kayıt sistemi bunları dinler. Etkileşim gerçekleştikten sonra tetiklenir.
         public event Action<IInteractable> Interacted;
         public event Action Dropped;
+        public event Action<IHoldable> HoldStarted;
+        public event Action HoldEnded;
 
         public IInteractable CurrentTarget { get; private set; }
 
         // Aynı collider'a bakmaya devam ederken her karede GetComponent çağırmamak için.
         private Collider lastCollider;
+
+        // Şu an basılı tutulan nesne. E bırakılınca ya da başka yere bakınca tutma biter.
+        private IHoldable activeHold;
 
         private void OnEnable()
         {
@@ -41,6 +46,8 @@ namespace Game.Interaction
 
         private void OnDisable()
         {
+            // Ölünce bileşen kapanır; elimiz düğmeden çekilir.
+            ReleaseHold();
             interactAction.action.Disable();
             SetTarget(null);
             lastCollider = null;
@@ -50,10 +57,27 @@ namespace Game.Interaction
         {
             UpdateTarget();
 
+            if (activeHold != null && (!interactAction.action.IsPressed() || CurrentTarget as IHoldable != activeHold))
+            {
+                ReleaseHold();
+            }
+
             if (interactAction.action.WasPressedThisFrame())
             {
                 TryInteract();
             }
+        }
+
+        private void ReleaseHold()
+        {
+            if (activeHold == null)
+            {
+                return;
+            }
+
+            activeHold.EndHold(this);
+            activeHold = null;
+            HoldEnded?.Invoke();
         }
 
         private void UpdateTarget()
@@ -93,6 +117,17 @@ namespace Game.Interaction
         private void TryInteract()
         {
             IInteractable target = CurrentTarget;
+
+            if (target is IHoldable holdable)
+            {
+                if (holdable.CanHold(this))
+                {
+                    holdable.BeginHold(this);
+                    activeHold = holdable;
+                    HoldStarted?.Invoke(holdable);
+                }
+                return;
+            }
 
             if (target != null)
             {
