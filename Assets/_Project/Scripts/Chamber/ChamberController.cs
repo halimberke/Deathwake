@@ -16,6 +16,10 @@ namespace Game.Chamber
         [SerializeField] private float prepareDuration = 0.5f;
         [Tooltip("Ölümden sonra sahne yeniden yüklenmeden önceki bekleme (saniye).")]
         [SerializeField] private float deathDuration = 1.5f;
+        [Tooltip("Açıksa oda çözülünce Build Settings'teki bir sonraki sahne yüklenir.")]
+        [SerializeField] private bool loadNextOnSolve = true;
+        [Tooltip("Oda çözüldükten sonra sonraki sahne yüklenmeden önceki bekleme (saniye).")]
+        [SerializeField] private float solvedDuration = 2f;
 
         [Header("Olaylar")]
         [SerializeField] private UnityEvent onAttemptStarted;
@@ -79,6 +83,11 @@ namespace Game.Chamber
             Clock.StopClock();
             SetState(ChamberState.Solved);
             onSolved.Invoke();
+
+            if (loadNextOnSolve)
+            {
+                StartCoroutine(LoadNextAfterSolve());
+            }
         }
 
         // "Odayı sıfırla": tüm denemeleri ve yankıları silip baştan başlar.
@@ -110,6 +119,22 @@ namespace Game.Chamber
         {
             yield return new WaitForSeconds(deathDuration);
             Reload();
+        }
+
+        // Oda sırası Build Settings'teki sahne sırasıdır.
+        private IEnumerator LoadNextAfterSolve()
+        {
+            yield return new WaitForSeconds(solvedDuration);
+
+            int next = SceneManager.GetActiveScene().buildIndex + 1;
+            if (next < SceneManager.sceneCountInBuildSettings)
+            {
+                SceneManager.LoadScene(next);
+            }
+            else
+            {
+                Debug.Log("Son oda çözüldü. Sonraki sahne yok.", this);
+            }
         }
 
         private void Reload()

@@ -35,6 +35,14 @@ namespace Game.Interaction
             item.AttachTo(holdPoint);
         }
 
+        // Eldeki eşyayı başka bir sisteme verir (örnek: geçiş kutusu). Eşyayı nereye koyacağı alana kalır.
+        public Pickup Take()
+        {
+            Pickup item = HeldItem;
+            HeldItem = null;
+            return item;
+        }
+
         public void Drop()
         {
             if (HeldItem == null)
