@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 namespace Game.Interaction
 {
     // Kameranın ortasından ışın göndererek bakılan IInteractable'ı bulur ve E tuşunu işler.
-    public class PlayerInteractor : MonoBehaviour
+    public class PlayerInteractor : MonoBehaviour, IInteractor
     {
         [Header("Input")]
         [SerializeField] private InputActionReference interactAction;
@@ -24,6 +24,10 @@ namespace Game.Interaction
 
         // Hedef değiştiğinde (yeni nesneye bakınca ya da boşluğa dönünce) tetiklenir. Null olabilir.
         public event Action<IInteractable> TargetChanged;
+
+        // Kayıt sistemi bunları dinler. Etkileşim gerçekleştikten sonra tetiklenir.
+        public event Action<IInteractable> Interacted;
+        public event Action Dropped;
 
         public IInteractable CurrentTarget { get; private set; }
 
@@ -88,11 +92,14 @@ namespace Game.Interaction
         // Kilitli bir hedefe bakarken bırakılmaz: yanlışlıkla eşya düşürmeyi önler.
         private void TryInteract()
         {
-            if (CurrentTarget != null)
+            IInteractable target = CurrentTarget;
+
+            if (target != null)
             {
-                if (CurrentTarget.CanInteract(this))
+                if (target.CanInteract(this))
                 {
-                    CurrentTarget.Interact(this);
+                    target.Interact(this);
+                    Interacted?.Invoke(target);
                 }
                 return;
             }
@@ -100,6 +107,7 @@ namespace Game.Interaction
             if (CanDrop)
             {
                 hand.Drop();
+                Dropped?.Invoke();
             }
         }
 

@@ -18,17 +18,17 @@ namespace Game.Interaction
 
         private bool used;
 
-        public string GetPrompt(PlayerInteractor interactor)
+        public string GetPrompt(IInteractor interactor)
         {
             return CanInteract(interactor) ? prompt : disabledPrompt;
         }
 
-        public bool CanInteract(PlayerInteractor interactor)
+        public bool CanInteract(IInteractor interactor)
         {
             return isEnabled && !(singleUse && used);
         }
 
-        public void Interact(PlayerInteractor interactor)
+        public void Interact(IInteractor interactor)
         {
             used = true;
             onPressed.Invoke();

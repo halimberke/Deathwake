@@ -45,7 +45,7 @@ namespace Game.Interaction
             hinge.localRotation = TargetRotation();
         }
 
-        public string GetPrompt(PlayerInteractor interactor)
+        public string GetPrompt(IInteractor interactor)
         {
             if (isLocked)
             {
@@ -60,12 +60,12 @@ namespace Game.Interaction
             return isOpen ? closePrompt : openPrompt;
         }
 
-        public bool CanInteract(PlayerInteractor interactor)
+        public bool CanInteract(IInteractor interactor)
         {
             return !isLocked || CanUnlockWithHand(interactor);
         }
 
-        public void Interact(PlayerInteractor interactor)
+        public void Interact(IInteractor interactor)
         {
             if (isLocked)
             {
@@ -84,7 +84,7 @@ namespace Game.Interaction
         public void Unlock() => isLocked = false;
         public void Lock() => isLocked = true;
 
-        private bool CanUnlockWithHand(PlayerInteractor interactor)
+        private bool CanUnlockWithHand(IInteractor interactor)
         {
             return requiredItem != null && interactor.Hand != null && interactor.Hand.IsHolding(requiredItem);
         }

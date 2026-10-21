@@ -15,6 +15,9 @@ namespace Game.Interaction
 
         public ItemDefinition Definition => definition;
 
+        // Şu an bir aktörün elinde mi? Yankı, oyuncunun elindeki eşyayı alamaz (paradoks).
+        public bool IsHeld { get; private set; }
+
         // Tanım atanmadıysa nesne adı kullanılır. Test nesneleri için kolaylık.
         public string DisplayName => definition != null ? definition.DisplayName : name;
 
@@ -25,17 +28,17 @@ namespace Game.Interaction
             originalInterpolation = body.interpolation;
         }
 
-        public string GetPrompt(PlayerInteractor interactor)
+        public string GetPrompt(IInteractor interactor)
         {
             return $"{prompt} ({DisplayName})";
         }
 
-        public bool CanInteract(PlayerInteractor interactor)
+        public bool CanInteract(IInteractor interactor)
         {
-            return interactor.Hand != null;
+            return interactor.Hand != null && !IsHeld;
         }
 
-        public void Interact(PlayerInteractor interactor)
+        public void Interact(IInteractor interactor)
         {
             interactor.Hand.Hold(this);
         }
@@ -43,6 +46,7 @@ namespace Game.Interaction
         // HandSlot tarafından çağrılır.
         public void AttachTo(Transform holdPoint)
         {
+            IsHeld = true;
             body.isKinematic = true;
             // Interpolation açık kalırsa Unity nesneyi eski fizik konumundan yavaşça çeker
             // ve eşya kameranın gerisinde kalır. Elde tutulurken kapatılır.
@@ -60,6 +64,7 @@ namespace Game.Interaction
             transform.SetParent(null, true);
             transform.SetPositionAndRotation(position, rotation);
 
+            IsHeld = false;
             SetCollidersEnabled(true);
             body.isKinematic = false;
             body.interpolation = originalInterpolation;
