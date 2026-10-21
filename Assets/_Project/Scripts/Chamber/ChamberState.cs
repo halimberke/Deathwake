@@ -2,10 +2,9 @@ namespace Game.Chamber
 {
     public enum ChamberState
     {
-        Preparing, // Sahne yüklendi, deneme henüz başlamadı.
+        Preparing, // Oda yüklendi, deneme henüz başlamadı.
         Running,   // Saat işliyor.
-        Dead,      // Oyuncu öldü, kısa bekleme.
-        Resetting, // Sahne yeniden yükleniyor.
+        Dead,      // Oyuncu öldü; oyun akışı odayı yeniden yükleyecek.
         Solved     // Oda çözüldü.
     }
 }

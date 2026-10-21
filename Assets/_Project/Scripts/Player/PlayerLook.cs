@@ -29,6 +29,13 @@ namespace Game.Player
             inputBlocked = blocked;
         }
 
+        // Işınlandıktan sonra bakış ileriye döner.
+        public void ResetPitch()
+        {
+            pitch = 0f;
+            cameraPivot.localRotation = Quaternion.identity;
+        }
+
         private void OnEnable()
         {
             lookAction.action.Enable();

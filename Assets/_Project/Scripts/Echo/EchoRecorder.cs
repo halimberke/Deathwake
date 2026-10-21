@@ -6,9 +6,9 @@ namespace Game.Echo
 {
     // Oyuncunun denemesini kaydeder: düzenli aralıkla duruş, ayrıca etkileşim olayları.
     // Deneme ölümle bitince kayıt odanın ilerlemesine eklenir ve sonraki denemede yankı olur.
+    // Hangi odanın kaydedileceğini ActiveChamber'dan öğrenir; oda değişince ona geçer.
     public class EchoRecorder : MonoBehaviour
     {
-        [SerializeField] private ChamberController chamber;
         [SerializeField] private PlayerInteractor interactor;
         [Tooltip("Konum ve sağa-sola dönüş buradan okunur. Genelde Player.")]
         [SerializeField] private Transform body;
@@ -18,12 +18,14 @@ namespace Game.Echo
         [SerializeField] private float sampleRate = 30f;
         [SerializeField] private bool logSummary = true;
 
+        private ChamberController chamber;
         private GhostRecording current;
         private float nextSampleTime;
 
         private void OnEnable()
         {
-            chamber.StateChanged += HandleStateChanged;
+            ActiveChamber.Changed += Bind;
+            Bind(ActiveChamber.Current);
             interactor.Interacted += HandleInteracted;
             interactor.Dropped += HandleDropped;
             interactor.HoldStarted += HandleHoldStarted;
@@ -32,17 +34,34 @@ namespace Game.Echo
 
         private void OnDisable()
         {
-            chamber.StateChanged -= HandleStateChanged;
+            ActiveChamber.Changed -= Bind;
+            Bind(null);
             interactor.Interacted -= HandleInteracted;
             interactor.Dropped -= HandleDropped;
             interactor.HoldStarted -= HandleHoldStarted;
             interactor.HoldEnded -= HandleHoldEnded;
         }
 
+        private void Bind(ChamberController next)
+        {
+            if (chamber != null)
+            {
+                chamber.StateChanged -= HandleStateChanged;
+            }
+
+            chamber = next;
+            current = null;
+
+            if (chamber != null)
+            {
+                chamber.StateChanged += HandleStateChanged;
+            }
+        }
+
         // Hareket Update'te yapıldığı için duruş LateUpdate'te, karenin son hâliyle okunur.
         private void LateUpdate()
         {
-            if (current == null)
+            if (current == null || chamber == null)
             {
                 return;
             }

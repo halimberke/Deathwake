@@ -9,7 +9,6 @@ namespace Game.Chamber
     // yankılar senkrondan çıkmaz.
     public class ChamberTimeControl : MonoBehaviour
     {
-        [SerializeField] private ChamberController chamber;
         [SerializeField] private InputActionReference fastForwardAction;
         [SerializeField] private float speed = 4f;
         [Tooltip("Açıksa hızlandırma bu odada ilk ölümden sonra kullanılabilir.")]
@@ -21,9 +20,17 @@ namespace Game.Chamber
         public bool IsFastForwarding { get; private set; }
         public float Speed => speed;
 
-        public bool IsAvailable =>
-            chamber.State == ChamberState.Running &&
-            (!requireFirstDeath || chamber.Progress.AttemptCount > 1);
+        // Aktif oda ActiveChamber'dan okunur; oda yoksa hızlandırma kapalıdır.
+        public bool IsAvailable
+        {
+            get
+            {
+                ChamberController chamber = ActiveChamber.Current;
+                return chamber != null &&
+                       chamber.State == ChamberState.Running &&
+                       (!requireFirstDeath || chamber.Progress.AttemptCount > 1);
+            }
+        }
 
         private void OnEnable()
         {

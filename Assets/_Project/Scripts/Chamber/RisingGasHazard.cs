@@ -9,7 +9,8 @@ namespace Game.Chamber
         [SerializeField] private ChamberController chamber;
         [Tooltip("Ölçeği değişecek gaz kutusu. Pivotu ortada olan bir küp (varsayılan Cube).")]
         [SerializeField] private Transform gasVolume;
-        [SerializeField] private Transform player;
+        [Tooltip("Oyuncu bu etiketle bulunur (oyuncu oda sahnesinde değil, Core sahnesinde).")]
+        [SerializeField] private string playerTag = "Player";
 
         [Header("Zamanlama (oda saati, saniye)")]
         [SerializeField] private float riseStartTime = 25f;
@@ -22,21 +23,43 @@ namespace Game.Chamber
         [SerializeField] private float playerEyeHeight = 1.6f;
         [SerializeField] private string deathReason = "Gazdan boğuldun";
 
-        private float floorY;
+        // Yerel koordinatta: oda yüklendikten sonra başka bir yere taşınsa da geçerli kalır.
+        private float floorLocalY;
+        private Transform player;
 
         public float CurrentHeight { get; private set; }
 
         private void Awake()
         {
-            floorY = gasVolume.position.y - gasVolume.localScale.y * 0.5f;
+            floorLocalY = gasVolume.localPosition.y - gasVolume.localScale.y * 0.5f;
             SetHeight(0f);
+        }
+
+        private void OnEnable()
+        {
+            chamber.StateChanged += HandleStateChanged;
+        }
+
+        private void OnDisable()
+        {
+            chamber.StateChanged -= HandleStateChanged;
+        }
+
+        // Oyuncu deneme başında bir kez aranır; Update içinde arama yapılmaz.
+        private void HandleStateChanged(ChamberState previous, ChamberState next)
+        {
+            if (next == ChamberState.Running && player == null)
+            {
+                GameObject found = GameObject.FindWithTag(playerTag);
+                player = found != null ? found.transform : null;
+            }
         }
 
         // Gazın yüksekliği her karede saatten hesaplanır (zaman kontrolü değil, görselin kendisi).
         // Öldürme kararı da bu yükseklikten türer; ayrı bir sabit zaman yazılmaz.
         private void Update()
         {
-            if (chamber.State != ChamberState.Running)
+            if (chamber.State != ChamberState.Running || player == null)
             {
                 return;
             }
@@ -44,7 +67,8 @@ namespace Game.Chamber
             float progress = Mathf.InverseLerp(riseStartTime, riseEndTime, chamber.Clock.Time);
             SetHeight(progress * maxHeight);
 
-            if (floorY + CurrentHeight >= player.position.y + playerEyeHeight)
+            float gasTopY = gasVolume.parent.TransformPoint(0f, floorLocalY + CurrentHeight, 0f).y;
+            if (gasTopY >= player.position.y + playerEyeHeight)
             {
                 chamber.Kill(deathReason);
             }
@@ -59,9 +83,9 @@ namespace Game.Chamber
             scale.y = Mathf.Max(height, 0.001f);
             gasVolume.localScale = scale;
 
-            Vector3 position = gasVolume.position;
-            position.y = floorY + scale.y * 0.5f;
-            gasVolume.position = position;
+            Vector3 position = gasVolume.localPosition;
+            position.y = floorLocalY + scale.y * 0.5f;
+            gasVolume.localPosition = position;
         }
     }
 }

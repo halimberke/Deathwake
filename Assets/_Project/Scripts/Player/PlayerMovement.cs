@@ -35,6 +35,13 @@ namespace Game.Player
             inputBlocked = blocked;
         }
 
+        // Işınlandıktan sonra eski hız taşınmasın.
+        public void ResetVelocity()
+        {
+            horizontalVelocity = Vector3.zero;
+            verticalVelocity = 0f;
+        }
+
         private void Awake()
         {
             controller = GetComponent<CharacterController>();

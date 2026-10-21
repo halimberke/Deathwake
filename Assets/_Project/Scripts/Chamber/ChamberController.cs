@@ -2,24 +2,18 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 
 namespace Game.Chamber
 {
-    // Odanın durum makinesi: Hazırlık → Deneme → Ölüm → Sıfırlama, ya da Deneme → Çözüldü.
+    // Odanın durum makinesi: Hazırlık → Deneme → Ölüm, ya da Deneme → Çözüldü.
     // Her geçişte olay yayınlar. Kayıt, yankı, arayüz gibi sistemler bu olayları dinler.
+    // Sahne yükleme ve yeniden doğma bu sınıfın işi değil; oyun akışı (GameFlow) yapar.
     [RequireComponent(typeof(ChamberClock))]
     public class ChamberController : MonoBehaviour
     {
         [SerializeField] private ChamberDefinition definition;
-        [Tooltip("Sahne yüklendikten sonra deneme başlamadan önceki bekleme (saniye).")]
+        [Tooltip("Begin çağrıldıktan sonra deneme başlamadan önceki bekleme (saniye).")]
         [SerializeField] private float prepareDuration = 0.5f;
-        [Tooltip("Ölümden sonra sahne yeniden yüklenmeden önceki bekleme (saniye).")]
-        [SerializeField] private float deathDuration = 1.5f;
-        [Tooltip("Açıksa oda çözülünce Build Settings'teki bir sonraki sahne yüklenir.")]
-        [SerializeField] private bool loadNextOnSolve = true;
-        [Tooltip("Oda çözüldükten sonra sonraki sahne yüklenmeden önceki bekleme (saniye).")]
-        [SerializeField] private float solvedDuration = 2f;
 
         [Header("Olaylar")]
         [SerializeField] private UnityEvent onAttemptStarted;
@@ -34,6 +28,8 @@ namespace Game.Chamber
         public ChamberClock Clock { get; private set; }
         public ChamberProgress Progress { get; private set; }
         public string LastDeathReason { get; private set; }
+
+        private bool begun;
 
         private void Awake()
         {
@@ -51,10 +47,17 @@ namespace Game.Chamber
             Clock.Expired -= HandleClockExpired;
         }
 
-        private IEnumerator Start()
+        // Oyun akışı, oyuncu odaya girince çağırır. Oda yüklendiği anda değil:
+        // sonraki oda arka planda yüklenip bekleyebilir.
+        public void Begin()
         {
-            yield return new WaitForSeconds(prepareDuration);
-            BeginAttempt();
+            if (begun)
+            {
+                return;
+            }
+
+            begun = true;
+            StartCoroutine(BeginAfterPrepare());
         }
 
         // Tehlikeler (gaz vb.) oyuncuyu öldürürken bunu çağırır.
@@ -69,10 +72,9 @@ namespace Game.Chamber
             Clock.StopClock();
             SetState(ChamberState.Dead);
             onDied.Invoke();
-            StartCoroutine(ReloadAfterDeath());
         }
 
-        // Çıkış kapısı gibi bir nesne odanın çözüldüğünü bildirir.
+        // Çıkış alanı gibi bir nesne odanın çözüldüğünü bildirir.
         public void Solve()
         {
             if (State != ChamberState.Running)
@@ -83,27 +85,12 @@ namespace Game.Chamber
             Clock.StopClock();
             SetState(ChamberState.Solved);
             onSolved.Invoke();
-
-            if (loadNextOnSolve)
-            {
-                StartCoroutine(LoadNextAfterSolve());
-            }
         }
 
-        // "Odayı sıfırla": tüm denemeleri ve yankıları silip baştan başlar.
-        public void ResetChamber()
+        private IEnumerator BeginAfterPrepare()
         {
-            if (State == ChamberState.Resetting)
-            {
-                return;
-            }
+            yield return new WaitForSeconds(prepareDuration);
 
-            ChamberSession.Clear(definition);
-            Reload();
-        }
-
-        private void BeginAttempt()
-        {
             Progress.BeginAttempt();
             Clock.StartClock(definition.AttemptDuration);
             SetState(ChamberState.Running);
@@ -113,35 +100,6 @@ namespace Game.Chamber
         private void HandleClockExpired()
         {
             Kill("Süre doldu");
-        }
-
-        private IEnumerator ReloadAfterDeath()
-        {
-            yield return new WaitForSeconds(deathDuration);
-            Reload();
-        }
-
-        // Oda sırası Build Settings'teki sahne sırasıdır.
-        private IEnumerator LoadNextAfterSolve()
-        {
-            yield return new WaitForSeconds(solvedDuration);
-
-            int next = SceneManager.GetActiveScene().buildIndex + 1;
-            if (next < SceneManager.sceneCountInBuildSettings)
-            {
-                SceneManager.LoadScene(next);
-            }
-            else
-            {
-                Debug.Log("Son oda çözüldü. Sonraki sahne yok.", this);
-            }
-        }
-
-        private void Reload()
-        {
-            SetState(ChamberState.Resetting);
-            Scene scene = SceneManager.GetActiveScene();
-            SceneManager.LoadScene(scene.buildIndex);
         }
 
         private void SetState(ChamberState next)

@@ -4,9 +4,9 @@ using UnityEngine;
 namespace Game.Chamber
 {
     // Ekran köşesinde deneme sayısı, kalan süre ve durum yazısı. Prototip için.
+    // Aktif odayı ActiveChamber'dan okur; oda yoksa (geçiş kabininde) boş kalır.
     public class ChamberStatusUI : MonoBehaviour
     {
-        [SerializeField] private ChamberController chamber;
         [SerializeField] private TMP_Text label;
         [Tooltip("Boşsa hızlandırma bilgisi gösterilmez.")]
         [SerializeField] private ChamberTimeControl timeControl;
@@ -14,6 +14,13 @@ namespace Game.Chamber
 
         private void Update()
         {
+            ChamberController chamber = ActiveChamber.Current;
+            if (chamber == null)
+            {
+                label.text = string.Empty;
+                return;
+            }
+
             int attempt = chamber.Progress.AttemptCount;
             float remaining = chamber.Clock.Remaining;
 
