@@ -25,6 +25,29 @@ namespace Game.Echo
 
         public HandSlot Hand => hand;
 
+        // Göz hizası (bakış noktası). Taret gibi sistemler yankıyı görüp görmediğini bununla ölçer.
+        public Transform Eye => cameraPivot;
+
+        // Sahnedeki etkin yankılar. Her karede sahne taramak yerine bu liste kullanılır.
+        private static readonly List<GhostActor> active = new();
+        public static IReadOnlyList<GhostActor> Active => active;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetOnPlay()
+        {
+            active.Clear();
+        }
+
+        private void OnEnable()
+        {
+            active.Add(this);
+        }
+
+        private void OnDisable()
+        {
+            active.Remove(this);
+        }
+
         public void Init(GhostRecording recording, ChamberClock clock)
         {
             this.recording = recording;
