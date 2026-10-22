@@ -29,12 +29,21 @@ namespace Game.Player
         {
             interactor.HoldStarted += HandleHoldStarted;
             interactor.HoldEnded += HandleHoldEnded;
+            hand.HeldItemChanged += HandleHeldItemChanged;
         }
 
         private void OnDisable()
         {
             interactor.HoldStarted -= HandleHoldStarted;
             interactor.HoldEnded -= HandleHoldEnded;
+            hand.HeldItemChanged -= HandleHeldItemChanged;
+        }
+
+        // Ağır eşya taşırken yavaşla.
+        private void HandleHeldItemChanged(Pickup item)
+        {
+            float multiplier = item != null && item.Definition != null ? item.Definition.CarrySpeedMultiplier : 1f;
+            movement.SetSpeedMultiplier(multiplier);
         }
 
         private void HandleHoldStarted(IHoldable holdable)

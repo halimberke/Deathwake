@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Game.Interaction
@@ -14,6 +15,9 @@ namespace Game.Interaction
         [SerializeField] private float wallPadding = 0.2f;
         [SerializeField] private LayerMask obstacleMask = ~0;
 
+        // Eldeki eşya değişince (alma, bırakma, verme). Null = el boş. Örnek: ağır eşya oyuncuyu yavaşlatır.
+        public event Action<Pickup> HeldItemChanged;
+
         public Pickup HeldItem { get; private set; }
 
         public bool IsHolding(ItemDefinition item)
@@ -27,19 +31,18 @@ namespace Game.Interaction
             {
                 // Takas: eldeki, yeni eşyanın durduğu yere bırakılır.
                 Pickup previous = HeldItem;
-                HeldItem = null;
                 previous.Release(item.transform.position, item.transform.rotation);
             }
 
-            HeldItem = item;
             item.AttachTo(holdPoint);
+            SetHeld(item);
         }
 
         // Eldeki eşyayı başka bir sisteme verir (örnek: geçiş kutusu). Eşyayı nereye koyacağı alana kalır.
         public Pickup Take()
         {
             Pickup item = HeldItem;
-            HeldItem = null;
+            SetHeld(null);
             return item;
         }
 
@@ -51,8 +54,19 @@ namespace Game.Interaction
             }
 
             Pickup item = HeldItem;
-            HeldItem = null;
+            SetHeld(null);
             item.Release(GetDropPosition(), Quaternion.Euler(0f, dropOrigin.eulerAngles.y, 0f));
+        }
+
+        private void SetHeld(Pickup item)
+        {
+            if (HeldItem == item)
+            {
+                return;
+            }
+
+            HeldItem = item;
+            HeldItemChanged?.Invoke(item);
         }
 
         // Duvarın içine bırakmamak için önce önüne ışın atılır.

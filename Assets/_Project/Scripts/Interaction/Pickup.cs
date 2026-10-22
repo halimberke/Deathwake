@@ -9,8 +9,11 @@ namespace Game.Interaction
     {
         [SerializeField] private ItemDefinition definition;
         [SerializeField] private string prompt = "Al";
+        [Tooltip("Elde tutulurken boyut çarpanı. Büyük eşyalar ekranı kapatmasın diye küçültülür.")]
+        [SerializeField] private float heldScale = 1f;
 
         private Rigidbody body;
+        private Vector3 originalScale;
         private Collider[] colliders;
         private RigidbodyInterpolation originalInterpolation;
 
@@ -24,6 +27,9 @@ namespace Game.Interaction
         // Şu an bir aktörün elinde mi? Yankı, oyuncunun elindeki eşyayı alamaz (paradoks).
         public bool IsHeld { get; private set; }
 
+        // Bir yuvaya yerleştirildi mi? Yerleşen eşya artık alınamaz.
+        public bool IsPlaced { get; private set; }
+
         // Tanım atanmadıysa nesne adı kullanılır. Test nesneleri için kolaylık.
         public string DisplayName => definition != null ? definition.DisplayName : name;
 
@@ -32,6 +38,7 @@ namespace Game.Interaction
             body = GetComponent<Rigidbody>();
             colliders = GetComponentsInChildren<Collider>();
             originalInterpolation = body.interpolation;
+            originalScale = transform.localScale;
             homeParent = transform.parent;
             homeScene = gameObject.scene;
         }
@@ -43,7 +50,7 @@ namespace Game.Interaction
 
         public bool CanInteract(IInteractor interactor)
         {
-            return interactor.Hand != null && !IsHeld;
+            return interactor.Hand != null && !IsHeld && !IsPlaced;
         }
 
         public void Interact(IInteractor interactor)
@@ -64,6 +71,7 @@ namespace Game.Interaction
             transform.SetParent(holdPoint, false);
             transform.localPosition = Vector3.zero;
             transform.localRotation = Quaternion.identity;
+            transform.localScale = originalScale * heldScale;
         }
 
         // HandSlot ya da geçiş kutusu tarafından çağrılır.
@@ -71,6 +79,7 @@ namespace Game.Interaction
         {
             ReturnHome();
             transform.SetPositionAndRotation(position, rotation);
+            transform.localScale = originalScale;
 
             IsHeld = false;
             SetCollidersEnabled(true);
@@ -78,6 +87,21 @@ namespace Game.Interaction
             body.interpolation = originalInterpolation;
             body.linearVelocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
+        }
+
+        // Yuvaya yerleştirir: fizik kapalı, sabit, artık alınamaz ama üstüne basılabilir.
+        public void Place(Transform point)
+        {
+            ReturnHome();
+            transform.SetPositionAndRotation(point.position, point.rotation);
+            transform.localScale = originalScale;
+
+            IsHeld = false;
+            IsPlaced = true;
+            body.isKinematic = true;
+            body.interpolation = RigidbodyInterpolation.None;
+            SetCollidersEnabled(true);
+            Physics.SyncTransforms();
         }
 
         // SetParent(null) nesneyi bulunduğu sahnede bırakır; elde tutulurken bu sahne Core'dur.

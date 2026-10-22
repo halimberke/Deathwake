@@ -28,6 +28,13 @@ namespace Game.Player
         private Vector3 horizontalVelocity;
         private float verticalVelocity;
         private bool inputBlocked;
+        private float speedMultiplier = 1f;
+
+        // Ağır eşya taşırken yavaşlamak için. 1 = normal.
+        public void SetSpeedMultiplier(float multiplier)
+        {
+            speedMultiplier = multiplier;
+        }
 
         // Girdi yok sayılır ama yerçekimi ve yavaşlama sürer. Örnek: zaman hızlandırılırken.
         public void SetInputBlocked(bool blocked)
@@ -81,7 +88,7 @@ namespace Game.Player
                 wishDirection.Normalize();
             }
 
-            float targetSpeed = sprintAction.action.IsPressed() ? sprintSpeed : walkSpeed;
+            float targetSpeed = (sprintAction.action.IsPressed() ? sprintSpeed : walkSpeed) * speedMultiplier;
             Vector3 targetVelocity = wishDirection * targetSpeed;
 
             horizontalVelocity = Vector3.MoveTowards(
