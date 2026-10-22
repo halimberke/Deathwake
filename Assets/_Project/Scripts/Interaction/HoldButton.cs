@@ -10,6 +10,12 @@ namespace Game.Interaction
         [SerializeField] private string prompt = "Basılı tut";
         [SerializeField] private string heldPrompt = "Tutuluyor";
 
+        [Header("Tutma türü")]
+        [Tooltip("Kapalıysa E bırakılınca tutma bitmez; sadece tutan ölünce biter (kelepçe gibi).")]
+        [SerializeField] private bool releasesOnInput = true;
+        [Tooltip("Açıksa tutan oyuncu yürüyemez.")]
+        [SerializeField] private bool locksMovement;
+
         [Header("Görsel")]
         [Tooltip("Rengi değişecek parça. Boşsa görsel geri bildirim yok.")]
         [SerializeField] private Renderer indicator;
@@ -24,6 +30,8 @@ namespace Game.Interaction
         private MaterialPropertyBlock propertyBlock;
 
         public bool IsPressed => holders.Count > 0;
+        public bool ReleasesOnInput => releasesOnInput;
+        public bool LocksMovement => locksMovement;
 
         private void Awake()
         {

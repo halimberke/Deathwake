@@ -15,13 +15,38 @@ namespace Game.Player
 
         private CharacterController controller;
 
-        // İki ayrı neden girdiyi engelleyebilir. Biri bitince diğerini bozmasın diye ayrı tutulur.
+        // Birden fazla neden girdiyi engelleyebilir. Biri bitince diğerini bozmasın diye ayrı tutulur.
         private bool controlEnabled = true;
         private bool fastForwardBlock;
+        private bool holdLock; // Kelepçe gibi yerinde tutan bir şey tutuluyor: yürüme kapalı, bakış açık.
 
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
+        }
+
+        private void OnEnable()
+        {
+            interactor.HoldStarted += HandleHoldStarted;
+            interactor.HoldEnded += HandleHoldEnded;
+        }
+
+        private void OnDisable()
+        {
+            interactor.HoldStarted -= HandleHoldStarted;
+            interactor.HoldEnded -= HandleHoldEnded;
+        }
+
+        private void HandleHoldStarted(IHoldable holdable)
+        {
+            holdLock = holdable.LocksMovement;
+            ApplyInputBlock();
+        }
+
+        private void HandleHoldEnded()
+        {
+            holdLock = false;
+            ApplyInputBlock();
         }
 
         // Ölümde kapanır, yeniden doğunca açılır.
@@ -63,9 +88,9 @@ namespace Game.Player
 
         private void ApplyInputBlock()
         {
-            bool blocked = !controlEnabled || fastForwardBlock;
-            movement.SetInputBlocked(blocked);
-            look.SetInputBlocked(blocked);
+            bool lookBlocked = !controlEnabled || fastForwardBlock;
+            movement.SetInputBlocked(lookBlocked || holdLock);
+            look.SetInputBlocked(lookBlocked);
         }
     }
 }

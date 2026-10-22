@@ -57,7 +57,8 @@ namespace Game.Interaction
         {
             UpdateTarget();
 
-            if (activeHold != null && (!interactAction.action.IsPressed() || CurrentTarget as IHoldable != activeHold))
+            if (activeHold != null && activeHold.ReleasesOnInput &&
+                (!interactAction.action.IsPressed() || CurrentTarget as IHoldable != activeHold))
             {
                 ReleaseHold();
             }

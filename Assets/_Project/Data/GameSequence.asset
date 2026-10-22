@@ -17,3 +17,5 @@ MonoBehaviour:
     sceneName: Room01
   - type: 0
     sceneName: Room02
+  - type: 0
+    sceneName: Room03
