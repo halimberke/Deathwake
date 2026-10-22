@@ -278,8 +278,19 @@ namespace Game.Chamber
                 return;
             }
 
+            if (targetGhost != null)
+            {
+                // Kurşun yankının içinden geçip arkadaki yüzeye çarpar: yankıya hasar işlemediği görünsün.
+                // (Yankı canı bittiği için değil, kaydı bittiği için kaybolur.)
+                Vector3 direction = (lastSeenPoint - eye.position).normalized;
+                shotEnd = Physics.Raycast(eye.position, direction, out RaycastHit wall, 100f, occluderMask, QueryTriggerInteraction.Ignore)
+                    ? wall.point
+                    : eye.position + direction * 100f;
+                return;
+            }
+
             shotEnd = lastSeenPoint;
-            if (targetGhost == null && playerHealth != null)
+            if (playerHealth != null)
             {
                 playerHealth.TakeDamage(damagePerShot, deathReason);
             }

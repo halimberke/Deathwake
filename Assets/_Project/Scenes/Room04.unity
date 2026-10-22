@@ -486,8 +486,8 @@ MonoBehaviour:
   laser: {fileID: 129661458}
   spot: {fileID: 487470067}
   relockDelay: 1
-  fireInterval: 0.3
-  damagePerShot: 25
+  fireInterval: 0.4
+  damagePerShot: 20
   turnSpeed: 220
   scanArc: 100
   scanFrequency: 0.15
