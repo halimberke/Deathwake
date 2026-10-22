@@ -1,25 +1,26 @@
 using Game.Echo;
+using Game.Player;
 using UnityEngine;
 
 namespace Game.Chamber
 {
     // Gözetleme tareti. Kurallar:
-    // 1) İlk gördüğü kişiye kilitlenir (oyuncu ya da yankı; tesis yankıları da insan sayar) ve onu izler.
+    // 1) İlk gördüğü kişiye kilitlenir (oyuncu ya da yankı; tesis yankıları da insan sayar).
     //    Kilitliyken başka kimseyi görmez.
-    // 2) İzlediğini gözden kaybederse kısa bir süre bekler, sonra yeniden arar.
-    // 3) İzlediği kişi yasak bölgeye girerse kısa bir uyarıdan sonra ateş eder. Oyuncuysa ölür;
-    //    yankıysa mermi içinden geçer (yankı zaten o anda kaydını bitirip kaybolur).
+    // 2) İzlediği kişiyi gördüğü sürece ateş eder. Oyuncu hasar alır (tek atışta ölmez);
+    //    yankıya ateş etmek bir şey değiştirmez, kurşun içinden geçer.
+    // 3) Kurşun geçirmez cam görüşü kesmez ama kurşunu keser.
+    // 4) İzlediğini gözden kaybederse kısa bir süre bekler, sonra yeniden arar.
     public class SecurityTurret : MonoBehaviour
     {
-        private enum Mode { Scanning, Tracking, Alarm }
+        private enum Mode { Scanning, Firing, Searching }
 
         [SerializeField] private ChamberController chamber;
-        [SerializeField] private RestrictedZone zone;
 
         [Header("Parçalar")]
         [Tooltip("Dönen kafa. İleri yönü (mavi ok) namlu yönüdür.")]
         [SerializeField] private Transform head;
-        [Tooltip("Görüşün ve lazerin çıktığı nokta.")]
+        [Tooltip("Görüşün, lazerin ve atışın çıktığı nokta.")]
         [SerializeField] private Transform eye;
         [SerializeField] private LineRenderer laser;
         [SerializeField] private Light spot;
@@ -27,8 +28,10 @@ namespace Game.Chamber
         [Header("Davranış")]
         [Tooltip("Gözden kaybettikten sonra kilidi bırakmadan önce bekleme (sn).")]
         [SerializeField] private float relockDelay = 1f;
-        [Tooltip("İzlenen kişi yasak bölgeye girdikten sonra ateşe kadar geçen süre (sn).")]
-        [SerializeField] private float fireDelay = 0.5f;
+        [Tooltip("İki atış arası süre (sn).")]
+        [SerializeField] private float fireInterval = 0.33f;
+        [Tooltip("Oyuncuya isabet eden her atışın hasarı.")]
+        [SerializeField] private float damagePerShot = 12f;
         [Tooltip("Kafa dönüş hızı (derece/sn).")]
         [SerializeField] private float turnSpeed = 220f;
         [Tooltip("Ararken sağa-sola tarama açısı (toplam, derece).")]
@@ -46,21 +49,25 @@ namespace Game.Chamber
 
         [Header("Görsel")]
         [SerializeField] private Color scanColor = new Color(1f, 1f, 1f, 0.6f);
-        [SerializeField] private Color trackColor = new Color(1f, 0.85f, 0.2f, 0.9f);
-        [SerializeField] private Color alarmColor = new Color(1f, 0.15f, 0.1f, 1f);
-        [SerializeField] private float shotFlashDuration = 0.12f;
+        [SerializeField] private Color firingColor = new Color(1f, 0.15f, 0.1f, 1f);
+        [SerializeField] private Color searchingColor = new Color(1f, 0.85f, 0.2f, 0.9f);
+        [SerializeField] private float shotFlashDuration = 0.08f;
         [SerializeField] private float laserWidth = 0.02f;
-        [SerializeField] private float shotWidth = 0.08f;
+        [SerializeField] private float shotWidth = 0.07f;
 
         private Transform player;
+        private PlayerHealth playerHealth;
         private Transform target;          // Kilitli hedefin kökü (oyuncu ya da yankı)
         private GhostActor targetGhost;    // Hedef yankıysa
         private Vector3 lastSeenPoint;
+        private Vector3 shotEnd;           // Son atışın bittiği yer (hedef ya da cam)
         private float lostTimer;
-        private float alarmTimer;
+        private float fireTimer;
         private float flashTimer;
         private Quaternion restRotation;
         private Mode mode = Mode.Scanning;
+
+        private readonly RaycastHit[] hitBuffer = new RaycastHit[16];
 
         private void Awake()
         {
@@ -84,7 +91,11 @@ namespace Game.Chamber
             if (next == ChamberState.Running && player == null)
             {
                 GameObject found = GameObject.FindWithTag(playerTag);
-                player = found != null ? found.transform : null;
+                if (found != null)
+                {
+                    player = found.transform;
+                    playerHealth = found.GetComponent<PlayerHealth>();
+                }
             }
 
             if (next != ChamberState.Running)
@@ -104,15 +115,16 @@ namespace Game.Chamber
                 return;
             }
 
-            UpdateLock();
-            UpdateAlarm();
+            bool seeing = UpdateLock();
+            UpdateFire(seeing);
             UpdateAim();
             UpdateVisuals();
         }
 
         // ---------- Kilit ----------
 
-        private void UpdateLock()
+        // Kilitli hedef şu an görülüyorsa true.
+        private bool UpdateLock()
         {
             if (target != null)
             {
@@ -121,39 +133,45 @@ namespace Game.Chamber
                 {
                     lostTimer = 0f;
                     lastSeenPoint = seenPoint;
+                    mode = Mode.Firing;
+                    return true;
                 }
-                else
+
+                lostTimer += Time.deltaTime;
+                mode = Mode.Searching;
+                if (!alive || lostTimer >= relockDelay)
                 {
-                    lostTimer += Time.deltaTime;
-                    if (!alive || lostTimer >= relockDelay)
-                    {
-                        Unlock();
-                    }
+                    Unlock();
                 }
             }
 
             if (target == null)
             {
-                TryAcquire();
+                return TryAcquire();
             }
+
+            return false;
         }
 
         // Aynı karede birden fazla kişi görünürse yankı önce gelir (sonuç her denemede aynı olsun).
-        private void TryAcquire()
+        private bool TryAcquire()
         {
             foreach (GhostActor ghost in GhostActor.Active)
             {
                 if (CanSee(ghost.transform, ghost, out Vector3 point))
                 {
                     Lock(ghost.transform, ghost, point);
-                    return;
+                    return true;
                 }
             }
 
             if (player != null && CanSee(player, null, out Vector3 playerPoint))
             {
                 Lock(player, null, playerPoint);
+                return true;
             }
+
+            return false;
         }
 
         private void Lock(Transform newTarget, GhostActor ghost, Vector3 point)
@@ -162,8 +180,9 @@ namespace Game.Chamber
             targetGhost = ghost;
             lastSeenPoint = point;
             lostTimer = 0f;
-            alarmTimer = 0f;
-            mode = Mode.Tracking;
+            // İlk atış hemen değil, bir aralık sonra: kilitlenme ile ateş arasında kısa bir uyarı.
+            fireTimer = 0f;
+            mode = Mode.Firing;
         }
 
         private void Unlock()
@@ -171,24 +190,23 @@ namespace Game.Chamber
             target = null;
             targetGhost = null;
             lostTimer = 0f;
-            alarmTimer = 0f;
+            fireTimer = 0f;
             mode = Mode.Scanning;
         }
 
-        // Göz ile hedefin göğsü ya da başı arasında engel yoksa görülür.
-        // Yankının collider'ı yok, oyuncunun katmanı maskede yok: ikisi de kendini örtmez.
+        // Göz ile hedefin göğsü ya da başı arasında (cam hariç) engel yoksa görülür.
         private bool CanSee(Transform root, GhostActor ghost, out Vector3 seenPoint)
         {
             Vector3 chest = root.position + Vector3.up * chestHeight;
             Vector3 headPoint = ghost != null ? ghost.Eye.position : root.position + Vector3.up * headHeight;
 
-            if (HasLineOfSight(chest))
+            if (TraceTo(chest, out _) != Trace.Blocked)
             {
                 seenPoint = chest;
                 return true;
             }
 
-            if (HasLineOfSight(headPoint))
+            if (TraceTo(headPoint, out _) != Trace.Blocked)
             {
                 seenPoint = headPoint;
                 return true;
@@ -198,43 +216,72 @@ namespace Game.Chamber
             return false;
         }
 
-        private bool HasLineOfSight(Vector3 point)
+        private enum Trace { Clear, Glass, Blocked }
+
+        // Gözden noktaya ışın: arada opak bir şey varsa Blocked, sadece cam varsa Glass (en yakın camın noktası).
+        // Yankının collider'ı yok, oyuncunun katmanı maskede yok: ikisi de kendini örtmez.
+        private Trace TraceTo(Vector3 point, out Vector3 glassPoint)
         {
             Vector3 from = eye.position;
             Vector3 toPoint = point - from;
-            return !Physics.Raycast(from, toPoint.normalized, toPoint.magnitude - 0.05f,
+            float distance = toPoint.magnitude - 0.05f;
+            int count = Physics.RaycastNonAlloc(from, toPoint / toPoint.magnitude, hitBuffer, distance,
                 occluderMask, QueryTriggerInteraction.Ignore);
+
+            Trace result = Trace.Clear;
+            float nearestGlass = float.MaxValue;
+            glassPoint = default;
+
+            for (int i = 0; i < count; i++)
+            {
+                if (hitBuffer[i].collider.TryGetComponent(out BulletproofGlass _))
+                {
+                    if (hitBuffer[i].distance < nearestGlass)
+                    {
+                        nearestGlass = hitBuffer[i].distance;
+                        glassPoint = hitBuffer[i].point;
+                    }
+                    result = Trace.Glass;
+                }
+                else
+                {
+                    return Trace.Blocked;
+                }
+            }
+
+            return result;
         }
 
-        // ---------- Alarm ve ateş ----------
+        // ---------- Ateş ----------
 
-        private void UpdateAlarm()
+        private void UpdateFire(bool seeing)
         {
-            bool targetInZone = target != null && lostTimer == 0f && zone.Contains(target.position);
-            if (!targetInZone)
+            if (!seeing)
             {
-                alarmTimer = 0f;
-                if (target != null)
-                {
-                    mode = Mode.Tracking;
-                }
+                fireTimer = 0f;
                 return;
             }
 
-            mode = Mode.Alarm;
-            alarmTimer += Time.deltaTime;
-            if (alarmTimer < fireDelay)
+            fireTimer += Time.deltaTime;
+            if (fireTimer < fireInterval)
             {
                 return;
             }
 
-            alarmTimer = 0f;
+            fireTimer = 0f;
             flashTimer = shotFlashDuration;
 
-            // Yankıya ateş etmek bir şey değiştirmez: mermi içinden geçer.
-            if (targetGhost == null)
+            // Cam kurşunu durdurur. Yankıya isabet bir şey değiştirmez.
+            if (TraceTo(lastSeenPoint, out Vector3 glassPoint) == Trace.Glass)
             {
-                chamber.Kill(deathReason);
+                shotEnd = glassPoint;
+                return;
+            }
+
+            shotEnd = lastSeenPoint;
+            if (targetGhost == null && playerHealth != null)
+            {
+                playerHealth.TakeDamage(damagePerShot, deathReason);
             }
         }
 
@@ -245,8 +292,7 @@ namespace Game.Chamber
             Quaternion desired;
             if (target != null)
             {
-                Vector3 direction = lastSeenPoint - head.position;
-                desired = Quaternion.LookRotation(direction, Vector3.up);
+                desired = Quaternion.LookRotation(lastSeenPoint - head.position, Vector3.up);
             }
             else
             {
@@ -262,20 +308,20 @@ namespace Game.Chamber
         {
             Color color = mode switch
             {
-                Mode.Alarm => alarmColor,
-                Mode.Tracking => trackColor,
+                Mode.Firing => firingColor,
+                Mode.Searching => searchingColor,
                 _ => scanColor
             };
 
             bool flashing = flashTimer > 0f;
-            Vector3 end = target != null
-                ? lastSeenPoint
+            Vector3 end = flashing ? shotEnd
+                : target != null ? lastSeenPoint
                 : eye.position + eye.forward * 30f;
 
             laser.enabled = true;
             laser.SetPosition(0, eye.position);
             laser.SetPosition(1, end);
-            laser.startColor = laser.endColor = flashing ? alarmColor : color;
+            laser.startColor = laser.endColor = color;
             laser.startWidth = laser.endWidth = flashing ? shotWidth : laserWidth;
 
             spot.enabled = true;
