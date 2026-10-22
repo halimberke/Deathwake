@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da9290971b9f0624e8673ca41b5f7636, type: 3}
   m_Name: Item_HeavyBlock
   m_EditorClassIdentifier: Assembly-CSharp::Game.Interaction.ItemDefinition
-  displayName: "A\u011F\u0131r Blok"
-  carrySpeedMultiplier: 0.45
+  displayName: "K\xFC\xE7\xFCk Kasa"
+  carrySpeedMultiplier: 0.5
+  isHeavy: 1

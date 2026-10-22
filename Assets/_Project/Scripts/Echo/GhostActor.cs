@@ -13,6 +13,8 @@ namespace Game.Echo
         [SerializeField] private Transform cameraPivot;
         [SerializeField] private HandSlot hand;
         [SerializeField] private bool logSkippedSteps = true;
+        [Tooltip("Yankının uzanabileceği en uzak mesafe. Hedef bundan uzaktaysa (örnek: eşya taşındı) adım atlanır.")]
+        [SerializeField] private float maxReach = 3f;
 
         private GhostRecording recording;
         private ChamberClock clock;
@@ -102,7 +104,11 @@ namespace Game.Echo
                 case EchoEventType.Drop:
                     if (hand != null && hand.HeldItem != null)
                     {
-                        hand.Drop();
+                        Pose recorded = new Pose(echoEvent.Position, Quaternion.Euler(0f, echoEvent.Yaw, 0f));
+                        if (!hand.PlaceAt(recorded))
+                        {
+                            LogSkipped(echoEvent, "yerleştireceği yer dolu");
+                        }
                     }
                     else
                     {
@@ -125,6 +131,12 @@ namespace Game.Echo
             if (!InteractableRegistry.TryGet(echoEvent.TargetId, out InteractableId id))
             {
                 LogSkipped(echoEvent, "hedef bulunamadı");
+                return;
+            }
+
+            if (!InReach(id))
+            {
+                LogSkipped(echoEvent, $"{id.name} uzanamayacağı kadar uzakta");
                 return;
             }
 
@@ -160,6 +172,12 @@ namespace Game.Echo
                 return;
             }
 
+            if (!InReach(id))
+            {
+                LogSkipped(echoEvent, $"{id.name} uzanamayacağı kadar uzakta");
+                return;
+            }
+
             IInteractable target = id.GetComponent<IInteractable>();
             if (target == null || !target.CanInteract(this))
             {
@@ -170,15 +188,28 @@ namespace Game.Echo
             target.Interact(this);
         }
 
+        // Yankı da oyuncu gibi sadece uzanabildiğine dokunur. Mesafe, nesnenin görünen sınırına göre ölçülür
+        // (elde tutulan eşyanın collider'ı kapalı olduğu için renderer kullanılır).
+        private bool InReach(InteractableId target)
+        {
+            Renderer shape = target.GetComponentInChildren<Renderer>();
+            Vector3 closest = shape != null
+                ? shape.bounds.ClosestPoint(cameraPivot.position)
+                : target.transform.position;
+            return Vector3.Distance(cameraPivot.position, closest) <= maxReach;
+        }
+
         private void Finish()
         {
             finished = true;
 
             // Kayıt ölümle bitti: tuttuğu düğmeyi bırakır, elindeki eşya o noktada düşer.
             ReleaseHold();
-            if (hand != null && hand.HeldItem != null)
+            if (hand != null && hand.HeldItem != null && !hand.Drop(out _))
             {
-                hand.Drop();
+                // Önde yer yoksa bile eşya yankıyla birlikte kaybolmasın: olduğu yere bırakılır.
+                Pickup item = hand.Take();
+                item.Release(item.transform.position, Quaternion.Euler(0f, transform.eulerAngles.y, 0f));
             }
 
             gameObject.SetActive(false);

@@ -123,9 +123,15 @@ namespace Game.Echo
             AddTargetEvent(EchoEventType.HoldStart, target as Component);
         }
 
-        private void HandleDropped()
+        // Konduğu poz da kaydedilir: yankı eşyayı fiziğe bırakmadan tam aynı yere koyar.
+        // Poz dünya koordinatındadır; oda yeniden yüklenince aynı yere yerleştiği için geçerli kalır.
+        private void HandleDropped(Pose placed)
         {
-            AddEvent(EchoEventType.Drop, null);
+            if (current != null)
+            {
+                current.AddEvent(new EchoEvent(chamber.Clock.Time, EchoEventType.Drop, null,
+                    placed.position, placed.rotation.eulerAngles.y));
+            }
         }
 
         private void HandleHoldEnded()

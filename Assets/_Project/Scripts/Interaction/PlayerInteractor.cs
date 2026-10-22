@@ -27,7 +27,8 @@ namespace Game.Interaction
 
         // Kayıt sistemi bunları dinler. Etkileşim gerçekleştikten sonra tetiklenir.
         public event Action<IInteractable> Interacted;
-        public event Action Dropped;
+        // Eşya yerleştirildi; konduğu poz ile (yankı aynı poza koyar).
+        public event Action<Pose> Dropped;
         public event Action<IHoldable> HoldStarted;
         public event Action HoldEnded;
 
@@ -130,23 +131,24 @@ namespace Game.Interaction
                 return;
             }
 
-            if (target != null)
+            if (target != null && target.CanInteract(this))
             {
-                if (target.CanInteract(this))
-                {
-                    target.Interact(this);
-                    Interacted?.Invoke(target);
-                }
+                target.Interact(this);
+                Interacted?.Invoke(target);
                 return;
             }
 
-            if (CanDrop)
+            if (CanDrop && hand.Drop(out Pose placed))
             {
-                hand.Drop();
-                Dropped?.Invoke();
+                Dropped?.Invoke(placed);
             }
         }
 
-        public bool CanDrop => CurrentTarget == null && hand != null && hand.HeldItem != null;
+        // Boşluğa ya da başka bir eşyaya bakarken E yerleştirme anlamına gelir.
+        // Yerin uygun olup olmadığı HandSlot.TryGetPlacement ile sorulur (önizleme yeşil/kırmızı).
+        // Kilitli kapı gibi başka bir hedefe bakarken bırakılmaz: yanlışlıkla eşya düşürmeyi önler.
+        public bool CanDrop =>
+            hand != null && hand.HeldItem != null &&
+            (CurrentTarget == null || CurrentTarget is Pickup);
     }
 }

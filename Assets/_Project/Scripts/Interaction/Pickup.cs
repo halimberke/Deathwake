@@ -11,6 +11,12 @@ namespace Game.Interaction
         [SerializeField] private string prompt = "Al";
         [Tooltip("Elde tutulurken boyut çarpanı. Büyük eşyalar ekranı kapatmasın diye küçültülür.")]
         [SerializeField] private float heldScale = 1f;
+        [Tooltip("Bu hızın üstünde hareket eden eşya alınamaz (havada uçan eşyayı yakalamak gibi).")]
+        [SerializeField] private float maxPickupSpeed = 0.5f;
+        [Tooltip("Fizik motorunun iç içe geçmiş nesneleri ayırırken verebileceği en yüksek hız. Fırlamayı önler.")]
+        [SerializeField] private float maxDepenetrationSpeed = 1f;
+        [Tooltip("Açıksa eşya devrilmez (sadece kendi ekseninde dönebilir). Kasalar rampaya dönüşmesin diye.")]
+        [SerializeField] private bool keepUpright;
 
         private Rigidbody body;
         private Vector3 originalScale;
@@ -23,6 +29,15 @@ namespace Game.Interaction
         private Scene homeScene;
 
         public ItemDefinition Definition => definition;
+
+        // Durmuş mu? Hareket hâlindeki eşya alınmaz.
+        private bool IsSettled => body.isKinematic || body.linearVelocity.sqrMagnitude <= maxPickupSpeed * maxPickupSpeed;
+
+        // Normal boyuttaki yarı ölçüler. Bırakırken yüzeyin içine gömülmemek için kullanılır.
+        public Vector3 Extents { get; private set; }
+
+        // Normal (elde küçülmemiş) boyut. Yerleştirme önizlemesi bunu kullanır.
+        public Vector3 OriginalScale => originalScale;
 
         // Şu an bir aktörün elinde mi? Yankı, oyuncunun elindeki eşyayı alamaz (paradoks).
         public bool IsHeld { get; private set; }
@@ -38,7 +53,13 @@ namespace Game.Interaction
             body = GetComponent<Rigidbody>();
             colliders = GetComponentsInChildren<Collider>();
             originalInterpolation = body.interpolation;
+            body.maxDepenetrationVelocity = maxDepenetrationSpeed;
+            if (keepUpright)
+            {
+                body.constraints |= RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+            }
             originalScale = transform.localScale;
+            Extents = transform.lossyScale * 0.5f;
             homeParent = transform.parent;
             homeScene = gameObject.scene;
         }
@@ -50,7 +71,9 @@ namespace Game.Interaction
 
         public bool CanInteract(IInteractor interactor)
         {
-            return interactor.Hand != null && !IsHeld && !IsPlaced;
+            // El doluyken alınmaz: bakılan eşyanın üstüne bırakılır (PlayerInteractor.CanDrop).
+            return interactor.Hand != null && interactor.Hand.HeldItem == null && !IsHeld && !IsPlaced
+                   && IsSettled;
         }
 
         public void Interact(IInteractor interactor)
@@ -77,9 +100,7 @@ namespace Game.Interaction
         // HandSlot ya da geçiş kutusu tarafından çağrılır.
         public void Release(Vector3 position, Quaternion rotation)
         {
-            ReturnHome();
-            transform.SetPositionAndRotation(position, rotation);
-            transform.localScale = originalScale;
+            MoveTo(position, rotation);
 
             IsHeld = false;
             SetCollidersEnabled(true);
@@ -87,20 +108,33 @@ namespace Game.Interaction
             body.interpolation = originalInterpolation;
             body.linearVelocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
+            // Kinematikten çıkan gövde "uyuyor" kalabilir ve havada asılı durur; yerçekimi için uyandırılır.
+            body.WakeUp();
         }
 
         // Yuvaya yerleştirir: fizik kapalı, sabit, artık alınamaz ama üstüne basılabilir.
         public void Place(Transform point)
         {
-            ReturnHome();
-            transform.SetPositionAndRotation(point.position, point.rotation);
-            transform.localScale = originalScale;
+            MoveTo(point.position, point.rotation);
 
             IsHeld = false;
             IsPlaced = true;
             body.isKinematic = true;
             body.interpolation = RigidbodyInterpolation.None;
             SetCollidersEnabled(true);
+        }
+
+        // Eşyayı elden alıp hedef poza taşır. Collider'lar açılmadan ÖNCE çağrılmalı.
+        // Transform'u değiştirmek fizik gövdesini hemen taşımaz: gövde bir fizik adımı boyunca
+        // eski yerinde (elde, oyuncunun göğsünde) tam boyutuyla kalır ve oyuncuyu yukarı iter.
+        // Bu yüzden gövde de açıkça taşınır ve fizik dünyası hemen güncellenir.
+        private void MoveTo(Vector3 position, Quaternion rotation)
+        {
+            ReturnHome();
+            transform.SetPositionAndRotation(position, rotation);
+            transform.localScale = originalScale;
+            body.position = position;
+            body.rotation = rotation;
             Physics.SyncTransforms();
         }
 

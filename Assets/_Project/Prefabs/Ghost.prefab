@@ -49,11 +49,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Interaction.HandSlot
   holdPoint: {fileID: 8630364208272020605}
   dropOrigin: {fileID: 8450972640279204208}
-  dropDistance: 0.8
-  wallPadding: 0.2
-  obstacleMask:
+  bodyClearance: 0.5
+  gap: 0.05
+  groundSearchDepth: 3
+  groundMask:
     serializedVersion: 2
     m_Bits: 4294967291
+  overlapMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  ownBody: {fileID: 0}
 --- !u!114 &1936677709670845836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,6 +74,7 @@ MonoBehaviour:
   cameraPivot: {fileID: 8450972640279204208}
   hand: {fileID: 3811350319454963699}
   logSkippedSteps: 1
+  maxReach: 3
 --- !u!1 &2358525601167471026
 GameObject:
   m_ObjectHideFlags: 0

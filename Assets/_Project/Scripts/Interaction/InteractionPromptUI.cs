@@ -13,7 +13,8 @@ namespace Game.Interaction
 
         [Header("Görünüm")]
         [SerializeField] private string keyLabel = "E";
-        [SerializeField] private string dropPrompt = "Bırak";
+        [SerializeField] private string dropPrompt = "Yerleştir";
+        [SerializeField] private string noRoomPrompt = "Yer yok";
         [SerializeField] private Color idleColor = new Color(1f, 1f, 1f, 0.5f);
         [SerializeField] private Color activeColor = Color.white;
         [SerializeField] private Color blockedColor = new Color(1f, 0.4f, 0.4f, 1f);
@@ -24,16 +25,26 @@ namespace Game.Interaction
             // hedef aynı kalsa da değişebilir. Tek bir arayüz çağrısı, maliyeti düşük.
             IInteractable target = interactor.CurrentTarget;
 
-            if (target == null)
+            bool canInteract = target != null && target.CanInteract(interactor);
+
+            // Hedef yoksa ya da hedef bir eşyaysa (üstüne bırakmak için) bırakma yazısı gösterilir.
+            if (!canInteract && interactor.CanDrop)
             {
-                crosshair.color = idleColor;
-                promptText.text = interactor.CanDrop
+                bool hasRoom = interactor.Hand.TryGetPlacement(out _, out bool valid) && valid;
+                crosshair.color = hasRoom ? idleColor : blockedColor;
+                promptText.text = hasRoom
                     ? $"{keyLabel}: {dropPrompt} ({interactor.Hand.HeldItem.DisplayName})"
-                    : string.Empty;
+                    : noRoomPrompt;
                 return;
             }
 
-            bool canInteract = target.CanInteract(interactor);
+            if (target == null)
+            {
+                crosshair.color = idleColor;
+                promptText.text = string.Empty;
+                return;
+            }
+
             string prompt = target.GetPrompt(interactor);
 
             crosshair.color = canInteract ? activeColor : blockedColor;
