@@ -1,5 +1,6 @@
 using Game.Player;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -57,14 +58,26 @@ namespace Game.Flow
         {
             GamePause.SetPaused(true);
             player.SetPaused(true);
+            ClearSelection();
             panel.SetActive(true);
         }
 
         public void Resume()
         {
+            ClearSelection();
             panel.SetActive(false);
             player.SetPaused(false);
             GamePause.SetPaused(false);
+        }
+
+        // EventSystem son tıklanan butonu "seçili" olarak hatırlar; menü yeniden açılınca
+        // o buton seçili/basılı renginde kalır. Her açılış ve kapanışta seçim temizlenir.
+        private static void ClearSelection()
+        {
+            if (EventSystem.current != null)
+            {
+                EventSystem.current.SetSelectedGameObject(null);
+            }
         }
 
         private void ResetRoom()
