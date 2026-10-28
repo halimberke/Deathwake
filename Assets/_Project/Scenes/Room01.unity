@@ -336,6 +336,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Interaction.Pickup
   definition: {fileID: 11400000, guid: 9403a5ce162b81d40a92dc8503f7f42f, type: 2}
   prompt: Al
+  heldScale: 1
+  maxPickupSpeed: 0.5
+  maxDepenetrationSpeed: 1
+  keepUpright: 0
 --- !u!54 &60096839
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1743,6 +1747,7 @@ Transform:
   - {fileID: 2238170249517577278}
   - {fileID: 1224998109}
   - {fileID: 696819623}
+  - {fileID: 1999523810}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1386812146
@@ -2387,6 +2392,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Interaction.HoldButton
   prompt: "Bas\u0131l\u0131 tut"
   heldPrompt: Tutuluyor
+  releasesOnInput: 1
+  locksMovement: 0
   indicator: {fileID: 1039275873}
   idleColor: {r: 0.6, g: 0.15, b: 0.15, a: 1}
   pressedColor: {r: 0.2, g: 0.9, b: 0.3, a: 1}
@@ -2738,6 +2745,52 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1981727176}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1999523808
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1999523810}
+  - component: {fileID: 1999523809}
+  m_Layer: 0
+  m_Name: Announcements
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1999523809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1999523808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc9af31d1771c62459699d799c3b2929, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.AnnouncementTrigger
+  announcement: {fileID: 11400000, guid: 7aaf900de219bee47b9953474cd52c01, type: 2}
+  playOnPlayerEnter: 0
+--- !u!4 &1999523810
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1999523808}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1243672391}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2082256124
 GameObject:
   m_ObjectHideFlags: 0
@@ -3056,6 +3109,7 @@ GameObject:
   - component: {fileID: 6546027306815838689}
   - component: {fileID: 5699299979064729418}
   - component: {fileID: 1127642661068927538}
+  - component: {fileID: 6546027306815838690}
   m_Layer: 0
   m_Name: Chamber
   m_TagString: Untagged
@@ -3098,6 +3152,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7637b16076385b4683c7b328afeaeb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Chamber.ChamberClock
+--- !u!114 &6546027306815838690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2261819704108286149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5630861a4d9ec254db1c990d6a64ac10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Chamber.ChamberTimeline
+  chamber: {fileID: 5699299979064729418}
+  entries:
+  - label: "A\xE7\u0131l\u0131\u015F anonsu"
+    time: 1
+    action:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1999523809}
+          m_TargetAssemblyTypeName: Game.Narrative.AnnouncementTrigger, Assembly-CSharp
+          m_MethodName: Play
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

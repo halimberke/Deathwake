@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Game.Chamber;
+using Game.Narrative;
 using Game.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -197,6 +198,7 @@ namespace Game.Flow
             if (clearEchoes)
             {
                 ChamberSession.Clear(definition);
+                Announcer.ResetChamber(definition);
             }
 
             yield return LoadRoom(sceneName, room => current = room);
