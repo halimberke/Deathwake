@@ -19,6 +19,7 @@ namespace Game.Player
         private bool controlEnabled = true;
         private bool fastForwardBlock;
         private bool holdLock; // Kelepçe gibi yerinde tutan bir şey tutuluyor: yürüme kapalı, bakış açık.
+        private bool paused;
 
         private void Awake()
         {
@@ -74,6 +75,15 @@ namespace Game.Player
             ApplyInputBlock();
         }
 
+        // Duraklatma: hareket, bakış ve etkileşim donar, fare serbest kalır. Tutulan şeyler bırakılmaz.
+        public void SetPaused(bool value)
+        {
+            paused = value;
+            interactor.InputFrozen = value;
+            look.SetCursorLocked(!value);
+            ApplyInputBlock();
+        }
+
         public void TeleportTo(Transform point)
         {
             // CharacterController açıkken transform'u doğrudan değiştirmek güvenilir değildir.
@@ -97,7 +107,7 @@ namespace Game.Player
 
         private void ApplyInputBlock()
         {
-            bool lookBlocked = !controlEnabled || fastForwardBlock;
+            bool lookBlocked = !controlEnabled || fastForwardBlock || paused;
             movement.SetInputBlocked(lookBlocked || holdLock);
             look.SetInputBlocked(lookBlocked);
         }

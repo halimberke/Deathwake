@@ -34,6 +34,10 @@ namespace Game.Interaction
 
         public IInteractable CurrentTarget { get; private set; }
 
+        // Açıkken girdi okunmaz ama tutulan düğme bırakılmaz (örnek: oyun duraklatıldı).
+        // Bileşeni kapatmak (enabled = false) tutmayı bırakır; bu ise durumu olduğu gibi dondurur.
+        public bool InputFrozen { get; set; }
+
         // Aynı collider'a bakmaya devam ederken her karede GetComponent çağırmamak için.
         private Collider lastCollider;
 
@@ -56,6 +60,11 @@ namespace Game.Interaction
 
         private void Update()
         {
+            if (InputFrozen)
+            {
+                return;
+            }
+
             UpdateTarget();
 
             if (activeHold != null && activeHold.ReleasesOnInput &&

@@ -1,3 +1,4 @@
+using Game.Flow;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -45,6 +46,12 @@ namespace Game.Chamber
 
         private void Update()
         {
+            // Duraklatma zamanı kendisi yönetir (timeScale = 0); burada ezilmesin.
+            if (GamePause.IsPaused)
+            {
+                return;
+            }
+
             Apply(IsAvailable && fastForwardAction.action.IsPressed());
         }
 

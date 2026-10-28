@@ -151,13 +151,37 @@ namespace Game.Flow
             }
         }
 
+        // Duraklatma menüsünden: odadaki tüm denemeleri ve yankıları silip odayı baştan başlatır.
+        public void ResetCurrentRoom()
+        {
+            if (busy || current == null)
+            {
+                return;
+            }
+
+            StartCoroutine(ResetRoutine());
+        }
+
+        private IEnumerator ResetRoutine()
+        {
+            busy = true;
+            player.SetControlEnabled(false);
+            yield return fader.FadeOut();
+            yield return ReloadCurrentRoom(clearEchoes: true);
+        }
+
         private IEnumerator Respawn()
         {
             busy = true;
             player.SetControlEnabled(false);
             yield return new WaitForSecondsRealtime(deathDuration);
             yield return fader.FadeOut();
+            yield return ReloadCurrentRoom(clearEchoes: false);
+        }
 
+        // Ekran kararmışken çağrılır. Oda sahnesini atıp yeniden yükler, oyuncuyu başlangıca koyar.
+        private IEnumerator ReloadCurrentRoom(bool clearEchoes)
+        {
             // Sonraki oda bu odanın çıkışına göre yerleşiyor; yüklemesi bitmeden oda yeniden yüklenmesin.
             while (preloading)
             {
@@ -165,9 +189,15 @@ namespace Game.Flow
             }
 
             string sceneName = current.gameObject.scene.name;
+            ChamberDefinition definition = current.Chamber.Definition;
             LeaveCurrent();
             player.ClearHand();
             yield return SceneManager.UnloadSceneAsync(current.gameObject.scene);
+
+            if (clearEchoes)
+            {
+                ChamberSession.Clear(definition);
+            }
 
             yield return LoadRoom(sceneName, room => current = room);
             current.SetRootPose(currentPose);
