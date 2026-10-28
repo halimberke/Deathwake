@@ -9,8 +9,7 @@ namespace Game.Chamber
     //    Kilitliyken başka kimseyi görmez.
     // 2) İzlediği kişiyi gördüğü sürece ateş eder. Oyuncu hasar alır (tek atışta ölmez);
     //    yankıya ateş etmek bir şey değiştirmez, kurşun içinden geçer.
-    // 3) Kurşun geçirmez cam görüşü kesmez ama kurşunu keser.
-    // 4) İzlediğini gözden kaybederse kısa bir süre bekler, sonra yeniden arar.
+    // 3) İzlediğini gözden kaybederse kısa bir süre bekler, sonra yeniden arar.
     public class SecurityTurret : MonoBehaviour
     {
         private enum Mode { Scanning, Firing, Searching }
@@ -60,14 +59,13 @@ namespace Game.Chamber
         private Transform target;          // Kilitli hedefin kökü (oyuncu ya da yankı)
         private GhostActor targetGhost;    // Hedef yankıysa
         private Vector3 lastSeenPoint;
-        private Vector3 shotEnd;           // Son atışın bittiği yer (hedef ya da cam)
+        private Vector3 shotEnd;           // Son atışın bittiği yer (hedef ya da arkadaki duvar)
         private float lostTimer;
         private float fireTimer;
         private float flashTimer;
         private Quaternion restRotation;
         private Mode mode = Mode.Scanning;
 
-        private readonly RaycastHit[] hitBuffer = new RaycastHit[16];
 
         private void Awake()
         {
@@ -194,19 +192,19 @@ namespace Game.Chamber
             mode = Mode.Scanning;
         }
 
-        // Göz ile hedefin göğsü ya da başı arasında (cam hariç) engel yoksa görülür.
+        // Göz ile hedefin göğsü ya da başı arasında engel yoksa görülür.
         private bool CanSee(Transform root, GhostActor ghost, out Vector3 seenPoint)
         {
             Vector3 chest = root.position + Vector3.up * chestHeight;
             Vector3 headPoint = ghost != null ? ghost.Eye.position : root.position + Vector3.up * headHeight;
 
-            if (TraceTo(chest, out _) != Trace.Blocked)
+            if (HasLineOfSight(chest))
             {
                 seenPoint = chest;
                 return true;
             }
 
-            if (TraceTo(headPoint, out _) != Trace.Blocked)
+            if (HasLineOfSight(headPoint))
             {
                 seenPoint = headPoint;
                 return true;
@@ -216,40 +214,13 @@ namespace Game.Chamber
             return false;
         }
 
-        private enum Trace { Clear, Glass, Blocked }
-
-        // Gözden noktaya ışın: arada opak bir şey varsa Blocked, sadece cam varsa Glass (en yakın camın noktası).
         // Yankının collider'ı yok, oyuncunun katmanı maskede yok: ikisi de kendini örtmez.
-        private Trace TraceTo(Vector3 point, out Vector3 glassPoint)
+        private bool HasLineOfSight(Vector3 point)
         {
             Vector3 from = eye.position;
             Vector3 toPoint = point - from;
-            float distance = toPoint.magnitude - 0.05f;
-            int count = Physics.RaycastNonAlloc(from, toPoint / toPoint.magnitude, hitBuffer, distance,
+            return !Physics.Raycast(from, toPoint.normalized, toPoint.magnitude - 0.05f,
                 occluderMask, QueryTriggerInteraction.Ignore);
-
-            Trace result = Trace.Clear;
-            float nearestGlass = float.MaxValue;
-            glassPoint = default;
-
-            for (int i = 0; i < count; i++)
-            {
-                if (hitBuffer[i].collider.TryGetComponent(out BulletproofGlass _))
-                {
-                    if (hitBuffer[i].distance < nearestGlass)
-                    {
-                        nearestGlass = hitBuffer[i].distance;
-                        glassPoint = hitBuffer[i].point;
-                    }
-                    result = Trace.Glass;
-                }
-                else
-                {
-                    return Trace.Blocked;
-                }
-            }
-
-            return result;
         }
 
         // ---------- Ateş ----------
@@ -270,13 +241,6 @@ namespace Game.Chamber
 
             fireTimer = 0f;
             flashTimer = shotFlashDuration;
-
-            // Cam kurşunu durdurur. Yankıya isabet bir şey değiştirmez.
-            if (TraceTo(lastSeenPoint, out Vector3 glassPoint) == Trace.Glass)
-            {
-                shotEnd = glassPoint;
-                return;
-            }
 
             if (targetGhost != null)
             {

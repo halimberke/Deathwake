@@ -42,9 +42,6 @@ namespace Game.Interaction
         // Şu an bir aktörün elinde mi? Yankı, oyuncunun elindeki eşyayı alamaz (paradoks).
         public bool IsHeld { get; private set; }
 
-        // Bir yuvaya yerleştirildi mi? Yerleşen eşya artık alınamaz.
-        public bool IsPlaced { get; private set; }
-
         // Tanım atanmadıysa nesne adı kullanılır. Test nesneleri için kolaylık.
         public string DisplayName => definition != null ? definition.DisplayName : name;
 
@@ -72,7 +69,7 @@ namespace Game.Interaction
         public bool CanInteract(IInteractor interactor)
         {
             // El doluyken alınmaz: bakılan eşyanın üstüne bırakılır (PlayerInteractor.CanDrop).
-            return interactor.Hand != null && interactor.Hand.HeldItem == null && !IsHeld && !IsPlaced
+            return interactor.Hand != null && interactor.Hand.HeldItem == null && !IsHeld
                    && IsSettled;
         }
 
@@ -110,18 +107,6 @@ namespace Game.Interaction
             body.angularVelocity = Vector3.zero;
             // Kinematikten çıkan gövde "uyuyor" kalabilir ve havada asılı durur; yerçekimi için uyandırılır.
             body.WakeUp();
-        }
-
-        // Yuvaya yerleştirir: fizik kapalı, sabit, artık alınamaz ama üstüne basılabilir.
-        public void Place(Transform point)
-        {
-            MoveTo(point.position, point.rotation);
-
-            IsHeld = false;
-            IsPlaced = true;
-            body.isKinematic = true;
-            body.interpolation = RigidbodyInterpolation.None;
-            SetCollidersEnabled(true);
         }
 
         // Eşyayı elden alıp hedef poza taşır. Collider'lar açılmadan ÖNCE çağrılmalı.
