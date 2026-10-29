@@ -18,12 +18,19 @@ namespace Game.Flow
             group.blocksRaycasts = false;
         }
 
-        public IEnumerator FadeOut() => FadeTo(1f);
+        public bool IsBlack => group.alpha >= 1f;
 
-        public IEnumerator FadeIn() => FadeTo(0f);
+        public IEnumerator FadeOut() => FadeTo(1f, duration);
+
+        public IEnumerator FadeIn() => FadeTo(0f, duration);
+
+        public void SetBlack()
+        {
+            group.alpha = 1f;
+        }
 
         // Zaman hızlandırılmış ya da durmuş olsa bile aynı sürede çalışsın diye ölçeksiz zaman kullanılır.
-        private IEnumerator FadeTo(float target)
+        public IEnumerator FadeTo(float target, float duration)
         {
             float start = group.alpha;
             float elapsed = 0f;

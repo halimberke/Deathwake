@@ -12,6 +12,7 @@ namespace Game.Flow
     // - Sıradaki odayı arka planda yükler ve girişini mevcut odanın çıkışına yerleştirir.
     // - Oyuncu geçiş kabinine girince önceki odayı bellekten atar.
     // - Ölümde ekranı karartır ve sadece oda sahnesini yeniden yükler.
+    // - Çıkışı olmayan sahneden (ev gibi hikâye sahnesi) sonrakine karartmayla geçer.
     public class GameFlow : MonoBehaviour
     {
         [SerializeField] private GameSequence sequence;
@@ -34,7 +35,17 @@ namespace Game.Flow
         private bool busy;
         private bool preloading;
 
-        // Bir oda sahnesi doğrudan Play'le açıldıysa oyun ondan başlar; yoksa sıranın ilk odasından.
+        private void OnEnable()
+        {
+            FlowRequests.AdvanceRequested += HandleAdvanceRequested;
+        }
+
+        private void OnDisable()
+        {
+            FlowRequests.AdvanceRequested -= HandleAdvanceRequested;
+        }
+
+        // Bir oda sahnesi doğrudan Play'le açıldıysa oyun ondan başlar; yoksa sıranın ilk sahnesinden.
         private IEnumerator Start()
         {
             // Doğrudan açılan oda sahnesinin yüklemesi bitsin.
@@ -52,10 +63,10 @@ namespace Game.Flow
             }
             else
             {
-                currentIndex = FirstRoomIndex(0);
+                currentIndex = sequence.Count > 0 ? 0 : -1;
                 if (currentIndex < 0)
                 {
-                    Debug.LogError("Oyun sırasında hiç oda yok.", this);
+                    Debug.LogError("Oyun sırasında hiç sahne yok.", this);
                     yield break;
                 }
 
@@ -65,17 +76,32 @@ namespace Game.Flow
             currentPose = current.RootPose;
             SceneManager.SetActiveScene(current.gameObject.scene);
             player.TeleportTo(current.SpawnPoint);
-            current.Airlock.OpenForStart();
+            if (current.StartsBlack)
+            {
+                fader.SetBlack();
+            }
+
+            OpenAirlockForStart();
             EnterCurrent();
         }
 
         private void EnterCurrent()
         {
-            current.Chamber.StateChanged += HandleStateChanged;
-            ActiveChamber.Set(current.Chamber);
-            current.Chamber.Begin();
+            if (current.Chamber != null)
+            {
+                current.Chamber.StateChanged += HandleStateChanged;
+                ActiveChamber.Set(current.Chamber);
+                current.Chamber.Begin();
+            }
+            else
+            {
+                ActiveChamber.Set(null);
+            }
 
-            if (next == null && currentIndex >= 0)
+            current.NotifyEntered();
+
+            // Çıkışı olan sahnenin sonrası arka planda yüklenip kapısına hizalanır.
+            if (next == null && currentIndex >= 0 && current.ExitAnchor != null)
             {
                 StartCoroutine(PreloadNext());
             }
@@ -83,14 +109,26 @@ namespace Game.Flow
 
         private void LeaveCurrent()
         {
-            current.Chamber.StateChanged -= HandleStateChanged;
+            if (current.Chamber != null)
+            {
+                current.Chamber.StateChanged -= HandleStateChanged;
+            }
+
             ActiveChamber.Set(null);
+        }
+
+        private void OpenAirlockForStart()
+        {
+            if (current.Airlock != null)
+            {
+                current.Airlock.OpenForStart();
+            }
         }
 
         private IEnumerator PreloadNext()
         {
-            int index = FirstRoomIndex(currentIndex + 1);
-            if (index < 0)
+            int index = currentIndex + 1;
+            if (index >= sequence.Count)
             {
                 yield break;
             }
@@ -102,6 +140,12 @@ namespace Game.Flow
 
             if (loaded == null)
             {
+                yield break;
+            }
+
+            if (loaded.Airlock == null)
+            {
+                Debug.LogError($"{sequence[index].SceneName} yürüyerek girilecek ama kabini (Airlock) yok.", loaded);
                 yield break;
             }
 
@@ -141,6 +185,48 @@ namespace Game.Flow
             SceneManager.SetActiveScene(current.gameObject.scene);
             current.Airlock.OpenFront();
             EnterCurrent();
+            busy = false;
+        }
+
+        // Çıkışı olmayan sahne (ev) bittiğinde: karart, sahneyi at, sıradakini yükle.
+        private void HandleAdvanceRequested()
+        {
+            if (busy || next != null || currentIndex < 0 || currentIndex + 1 >= sequence.Count)
+            {
+                return;
+            }
+
+            StartCoroutine(AdvanceWithFade());
+        }
+
+        private IEnumerator AdvanceWithFade()
+        {
+            busy = true;
+            player.SetControlEnabled(false);
+            if (!fader.IsBlack)
+            {
+                yield return fader.FadeOut();
+            }
+
+            LeaveCurrent();
+            player.ClearHand();
+            yield return SceneManager.UnloadSceneAsync(current.gameObject.scene);
+
+            currentIndex++;
+            yield return LoadRoom(sequence[currentIndex].SceneName, room => current = room);
+            currentPose = current.RootPose;
+            SceneManager.SetActiveScene(current.gameObject.scene);
+
+            player.TeleportTo(current.SpawnPoint);
+            player.SetControlEnabled(true);
+            OpenAirlockForStart();
+            EnterCurrent();
+
+            if (!current.StartsBlack)
+            {
+                yield return fader.FadeIn();
+            }
+
             busy = false;
         }
 
@@ -190,14 +276,18 @@ namespace Game.Flow
             }
 
             string sceneName = current.gameObject.scene.name;
-            ChamberDefinition definition = current.Chamber.Definition;
+            ChamberDefinition definition = current.Chamber != null ? current.Chamber.Definition : null;
             LeaveCurrent();
             player.ClearHand();
             yield return SceneManager.UnloadSceneAsync(current.gameObject.scene);
 
             if (clearEchoes)
             {
-                ChamberSession.Clear(definition);
+                if (definition != null)
+                {
+                    ChamberSession.Clear(definition);
+                }
+
                 Announcer.ResetChamber(definition);
             }
 
@@ -207,10 +297,14 @@ namespace Game.Flow
 
             player.TeleportTo(current.SpawnPoint);
             player.SetControlEnabled(true);
-            current.Airlock.OpenForStart();
+            OpenAirlockForStart();
             EnterCurrent();
 
-            yield return fader.FadeIn();
+            if (!current.StartsBlack)
+            {
+                yield return fader.FadeIn();
+            }
+
             busy = false;
         }
 
@@ -233,21 +327,6 @@ namespace Game.Flow
             }
 
             onLoaded(room);
-        }
-
-        private int FirstRoomIndex(int from)
-        {
-            for (int i = from; i < sequence.Count; i++)
-            {
-                if (sequence[i].Type == GameSequence.StepType.Room)
-                {
-                    return i;
-                }
-
-                Debug.Log($"Ara sahne adımı henüz desteklenmiyor, atlandı: {sequence[i].SceneName}", this);
-            }
-
-            return -1;
         }
 
         private RoomRoot FindLoadedRoom()

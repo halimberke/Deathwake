@@ -23,6 +23,9 @@ namespace Game.Player
         private float pitch;
         private bool inputBlocked;
 
+        // Senaryo animasyonları (uyanma) kamerayı geçici olarak buradan oynatır.
+        public Transform CameraPivot => cameraPivot;
+
         // Fare yok sayılır, imleç kilitli kalır. Örnek: zaman hızlandırılırken.
         public void SetInputBlocked(bool blocked)
         {

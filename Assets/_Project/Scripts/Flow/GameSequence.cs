@@ -11,8 +11,8 @@ namespace Game.Flow
     {
         public enum StepType
         {
-            Room,
-            Cutscene // Henüz desteklenmiyor; akış bu adımları atlar.
+            Room,  // Ölümcül oda
+            Story  // Hikâye sahnesi (ev, hücre): oda saati ve yankı yok
         }
 
         [Serializable]

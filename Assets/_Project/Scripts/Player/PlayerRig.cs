@@ -1,3 +1,4 @@
+using System.Collections;
 using Game.Interaction;
 using UnityEngine;
 
@@ -13,6 +14,13 @@ namespace Game.Player
         [SerializeField] private PlayerInteractor interactor;
         [SerializeField] private HandSlot hand;
 
+        [Header("Uyanma animasyonu")]
+        [Tooltip("Başlangıçta kamera normal göz hizasından bu kadar aşağıda (yatakta yatar gibi).")]
+        [SerializeField] private float wakeDrop = 0.9f;
+        [Tooltip("Başlangıç bakışı: negatif yukarı (tavana) bakar.")]
+        [SerializeField] private float wakeStartPitch = -80f;
+        [SerializeField] private float wakeStartRoll = 20f;
+
         private CharacterController controller;
 
         // Birden fazla neden girdiyi engelleyebilir. Biri bitince diğerini bozmasın diye ayrı tutulur.
@@ -21,6 +29,7 @@ namespace Game.Player
         private bool holdLock; // Kelepçe gibi yerinde tutan bir şey tutuluyor: yürüme kapalı, bakış açık.
         private bool paused;
         private bool reading; // Not ya da defter açık: oda saati akar ama oyuncu donar, fare serbest.
+        private bool scripted; // Senaryo oyuncuyu tutuyor (uyanma, kaçırılma): her şey donar, fare kilitli.
 
         private void Awake()
         {
@@ -90,10 +99,42 @@ namespace Game.Player
             ApplyUiState();
         }
 
+        // Hikâye sahnelerinde senaryo oyuncuyu bir süre yerinde tutar.
+        public void SetScriptedBlock(bool value)
+        {
+            scripted = value;
+            ApplyUiState();
+        }
+
+        // Yatakta uyanma: kamera alçaktan, tavana bakarak başlar; doğrulup ileri bakar.
+        // Bitince bakış ileri döner. Kontrol kendiliğinden açılmaz; senaryo SetScriptedBlock(false) der.
+        public void PlayWakeUp(float duration)
+        {
+            StartCoroutine(WakeUpRoutine(duration));
+        }
+
+        private IEnumerator WakeUpRoutine(float duration)
+        {
+            SetScriptedBlock(true);
+            Transform pivot = look.CameraPivot;
+            Vector3 basePosition = pivot.localPosition;
+
+            for (float t = 0f; t < duration; t += Time.deltaTime)
+            {
+                float k = Mathf.SmoothStep(0f, 1f, t / duration);
+                pivot.localPosition = basePosition + Vector3.down * Mathf.Lerp(wakeDrop, 0f, k);
+                pivot.localRotation = Quaternion.Euler(Mathf.Lerp(wakeStartPitch, 0f, k), 0f, Mathf.Lerp(wakeStartRoll, 0f, k));
+                yield return null;
+            }
+
+            pivot.localPosition = basePosition;
+            look.ResetPitch();
+        }
+
         private void ApplyUiState()
         {
             bool uiOpen = paused || reading;
-            interactor.InputFrozen = uiOpen;
+            interactor.InputFrozen = uiOpen || scripted;
             look.SetCursorLocked(!uiOpen);
             ApplyInputBlock();
         }
@@ -121,7 +162,7 @@ namespace Game.Player
 
         private void ApplyInputBlock()
         {
-            bool lookBlocked = !controlEnabled || fastForwardBlock || paused || reading;
+            bool lookBlocked = !controlEnabled || fastForwardBlock || paused || reading || scripted;
             movement.SetInputBlocked(lookBlocked || holdLock);
             look.SetInputBlocked(lookBlocked);
         }

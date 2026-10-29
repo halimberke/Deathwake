@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: GameSequence
   m_EditorClassIdentifier: Assembly-CSharp::Game.Flow.GameSequence
   steps:
+  - type: 1
+    sceneName: Cell
   - type: 0
     sceneName: Room01
   - type: 0
