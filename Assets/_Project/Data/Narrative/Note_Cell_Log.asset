@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3f942f8f8a93a54cb70d6a9d85d4cab, type: 3}
+  m_Name: Note_Cell_Log
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.NoteDefinition
+  title: "G\xF6zlem Kayd\u0131 \u2014 Denek 7"
+  body: "Toplama: sorunsuz.\nHaf\u0131za: temiz.\n\u0130lk tepki: beklenen aral\u0131kta.\n\nEv ortam\u0131ndaki not kald\u0131r\u0131lmam\u0131\u015F.\nSorumlu personel uyar\u0131ld\u0131."
+  style: 0

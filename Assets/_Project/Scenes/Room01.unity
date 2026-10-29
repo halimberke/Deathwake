@@ -1726,6 +1726,12 @@ MonoBehaviour:
   entryAnchor: {fileID: 1224998109}
   exitAnchor: {fileID: 696819623}
   spawnPoint: {fileID: 1224998108}
+  startsBlack: 0
+  onEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  sunIntensity: 1.2
+  ambientColor: {r: 0.35, g: 0.36, b: 0.4, a: 1}
 --- !u!4 &1243672391
 Transform:
   m_ObjectHideFlags: 0
@@ -1800,6 +1806,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.NoteItem
   note: {fileID: 11400000, guid: 329d6cc712670b047aa3e4af12461e6c, type: 2}
   prompt: Oku
+  onRead:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!23 &1320545068
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3238,6 +3247,7 @@ GameObject:
   - component: {fileID: 5699299979064729418}
   - component: {fileID: 1127642661068927538}
   - component: {fileID: 6546027306815838690}
+  - component: {fileID: 6546027306815838691}
   m_Layer: 0
   m_Name: Chamber
   m_TagString: Untagged
@@ -3311,6 +3321,29 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &6546027306815838691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2261819704108286149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d1da48844e1c01448003c542c00e7b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.ChamberAnnouncements
+  chamber: {fileID: 5699299979064729418}
+  entries:
+  - moment: 1
+    attempt: 1
+    announcement: {fileID: 11400000, guid: 113e7b3e8f408df4eaa621c27b8156a3, type: 2}
+  - moment: 0
+    attempt: 2
+    announcement: {fileID: 11400000, guid: 2702c6880b2976d4f8ac89eee0a8860d, type: 2}
+  - moment: 2
+    attempt: 0
+    announcement: {fileID: 11400000, guid: 7cec7ba17782483459d11a2ae754b6f2, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

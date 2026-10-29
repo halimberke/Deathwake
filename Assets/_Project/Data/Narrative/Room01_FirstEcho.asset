@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 414e4f872c67b804da9cac48c9471f5e, type: 3}
+  m_Name: Room01_FirstEcho
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.AnnouncementDefinition
+  speaker: {fileID: 11400000, guid: e06fb045e1bb5824a9b35a3d2f7e01ab, type: 2}
+  lines:
+  - "\xD6nceki deneme kayd\u0131 oynat\u0131l\u0131yor."
+  - "Kayd\u0131n\u0131zla birlikte \xE7al\u0131\u015F\u0131n."
+  playOnce: 1
+  linePause: 0.4
