@@ -20,6 +20,7 @@ namespace Game.Player
         private bool fastForwardBlock;
         private bool holdLock; // Kelepçe gibi yerinde tutan bir şey tutuluyor: yürüme kapalı, bakış açık.
         private bool paused;
+        private bool reading; // Not ya da defter açık: oda saati akar ama oyuncu donar, fare serbest.
 
         private void Awake()
         {
@@ -79,8 +80,21 @@ namespace Game.Player
         public void SetPaused(bool value)
         {
             paused = value;
-            interactor.InputFrozen = value;
-            look.SetCursorLocked(!value);
+            ApplyUiState();
+        }
+
+        // Not okuma ve defter: hareket, bakış ve etkileşim donar, fare serbest kalır. Zaman akmaya devam eder.
+        public void SetReading(bool value)
+        {
+            reading = value;
+            ApplyUiState();
+        }
+
+        private void ApplyUiState()
+        {
+            bool uiOpen = paused || reading;
+            interactor.InputFrozen = uiOpen;
+            look.SetCursorLocked(!uiOpen);
             ApplyInputBlock();
         }
 
@@ -107,7 +121,7 @@ namespace Game.Player
 
         private void ApplyInputBlock()
         {
-            bool lookBlocked = !controlEnabled || fastForwardBlock || paused;
+            bool lookBlocked = !controlEnabled || fastForwardBlock || paused || reading;
             movement.SetInputBlocked(lookBlocked || holdLock);
             look.SetInputBlocked(lookBlocked);
         }

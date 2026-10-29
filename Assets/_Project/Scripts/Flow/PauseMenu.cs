@@ -1,3 +1,4 @@
+using Game.Narrative;
 using Game.Player;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -41,7 +42,8 @@ namespace Game.Flow
         // Time.timeScale 0 iken de Update çalışır; girdi okunabilir.
         private void Update()
         {
-            if (pauseAction.action.WasPressedThisFrame())
+            // Not ya da defter açıksa Esc onu kapatır, menüyü açmaz.
+            if (pauseAction.action.WasPressedThisFrame() && !NotebookUI.BlocksPause)
             {
                 if (GamePause.IsPaused)
                 {

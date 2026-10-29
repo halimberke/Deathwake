@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15478fb4a46380d458a4231447338057, type: 3}
   m_Name: Chamber_Prototype
   m_EditorClassIdentifier: Assembly-CSharp::Game.Chamber.ChamberDefinition
-  displayName: Prototip
+  titleCode: DENEY 01
+  displayName: "Bekleyi\u015F"
   attemptDuration: 45
   maxEchoes: 1

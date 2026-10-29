@@ -36,7 +36,23 @@ namespace Game.Interaction
 
         // Açıkken girdi okunmaz ama tutulan düğme bırakılmaz (örnek: oyun duraklatıldı).
         // Bileşeni kapatmak (enabled = false) tutmayı bırakır; bu ise durumu olduğu gibi dondurur.
-        public bool InputFrozen { get; set; }
+        public bool InputFrozen
+        {
+            get => inputFrozen;
+            set
+            {
+                if (inputFrozen && !value)
+                {
+                    unfrozenFrame = Time.frameCount;
+                }
+
+                inputFrozen = value;
+            }
+        }
+
+        private bool inputFrozen;
+        // Donma kalktığı karede girdi okunmaz: paneli kapatan E aynı karede notu yeniden açmasın.
+        private int unfrozenFrame = -1;
 
         // Aynı collider'a bakmaya devam ederken her karede GetComponent çağırmamak için.
         private Collider lastCollider;
@@ -60,7 +76,7 @@ namespace Game.Interaction
 
         private void Update()
         {
-            if (InputFrozen)
+            if (InputFrozen || Time.frameCount == unfrozenFrame)
             {
                 return;
             }

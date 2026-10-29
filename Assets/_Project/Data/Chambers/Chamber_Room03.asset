@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15478fb4a46380d458a4231447338057, type: 3}
   m_Name: Chamber_Room03
   m_EditorClassIdentifier: Assembly-CSharp::Game.Chamber.ChamberDefinition
+  titleCode: DENEY 03
   displayName: Basamaklar
   attemptDuration: 20
   maxEchoes: 1

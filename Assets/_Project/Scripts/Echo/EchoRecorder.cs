@@ -115,6 +115,11 @@ namespace Game.Echo
 
         private void HandleInteracted(IInteractable target)
         {
+            if (target is IPlayerOnly)
+            {
+                return;
+            }
+
             AddTargetEvent(EchoEventType.Interact, target as Component);
         }
 

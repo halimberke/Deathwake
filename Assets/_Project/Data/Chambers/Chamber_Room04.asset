@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15478fb4a46380d458a4231447338057, type: 3}
   m_Name: Chamber_Room04
   m_EditorClassIdentifier: Assembly-CSharp::Game.Chamber.ChamberDefinition
+  titleCode: DENEY 04
   displayName: "G\xF6zetim"
   attemptDuration: 45
   maxEchoes: 1
