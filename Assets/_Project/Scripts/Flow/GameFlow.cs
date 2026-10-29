@@ -3,6 +3,7 @@ using System.Collections;
 using Game.Chamber;
 using Game.Narrative;
 using Game.Player;
+using Game.Visual;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,6 +19,7 @@ namespace Game.Flow
         [SerializeField] private GameSequence sequence;
         [SerializeField] private PlayerRig player;
         [SerializeField] private ScreenFader fader;
+        [SerializeField] private RetroAtmosphere atmosphere;
 
         [Header("Süreler (saniye)")]
         [Tooltip("Ölüm anından karartma başlayana kadar.")]
@@ -87,6 +89,8 @@ namespace Game.Flow
 
         private void EnterCurrent()
         {
+            atmosphere.SetRoomLighting(current.SunIntensity, current.AmbientColor);
+
             if (current.Chamber != null)
             {
                 current.Chamber.StateChanged += HandleStateChanged;

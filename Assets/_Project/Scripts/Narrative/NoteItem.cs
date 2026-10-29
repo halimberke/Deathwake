@@ -1,5 +1,6 @@
 using Game.Interaction;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Game.Narrative
 {
@@ -8,6 +9,8 @@ namespace Game.Narrative
     {
         [SerializeField] private NoteDefinition note;
         [SerializeField] private string prompt = "Oku";
+        [Tooltip("Not her okunduğunda. Senaryo buradan sinyal alabilir.")]
+        [SerializeField] private UnityEvent onRead;
 
         public string GetPrompt(IInteractor interactor) => prompt;
 
@@ -18,6 +21,7 @@ namespace Game.Narrative
             if (interactor is PlayerInteractor)
             {
                 Notebook.Read(note);
+                onRead.Invoke();
             }
         }
     }

@@ -45,6 +45,8 @@ namespace Game.Story
 
         public void WakeUp(float duration) => Player.PlayWakeUp(duration);
 
+        public void Shake(float duration) => Player.PlayShake(duration);
+
         public void SetBlack() => Fader.SetBlack();
 
         // Karartma bu nesnede çalışır; sahne atılırsa yarıda kalır (zaten sahne değişiyordur).

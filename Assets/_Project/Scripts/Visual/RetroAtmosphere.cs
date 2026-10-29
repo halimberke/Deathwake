@@ -19,6 +19,21 @@ namespace Game.Visual
         [Header("Ortam ışığı")]
         [Tooltip("Hiçbir lambanın aydınlatmadığı yerlerin rengi. Karanlık ama simsiyah değil.")]
         [SerializeField] private Color ambientColor = new Color(0.35f, 0.36f, 0.4f);
+        [Tooltip("Core'daki genel (yön) ışık. Gücünü her sahne kendisi belirler.")]
+        [SerializeField] private Light sun;
+
+        // Sahneye girilince oyun akışı çağırır: o sahnenin genel ışığı ve ortam rengi.
+        public void SetRoomLighting(float sunIntensity, Color ambient)
+        {
+            ambientColor = ambient;
+            if (sun != null)
+            {
+                sun.intensity = sunIntensity;
+                sun.enabled = sunIntensity > 0f;
+            }
+
+            Apply();
+        }
 
         private void OnEnable()
         {

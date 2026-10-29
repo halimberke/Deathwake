@@ -21,6 +21,11 @@ namespace Game.Player
         [SerializeField] private float wakeStartPitch = -80f;
         [SerializeField] private float wakeStartRoll = 20f;
 
+        [Header("Sarsıntı")]
+        [Tooltip("Kameranın en fazla kayması (m) ve dönmesi (derece).")]
+        [SerializeField] private float shakeOffset = 0.06f;
+        [SerializeField] private float shakeAngle = 6f;
+
         private CharacterController controller;
 
         // Birden fazla neden girdiyi engelleyebilir. Biri bitince diğerini bozmasın diye ayrı tutulur.
@@ -129,6 +134,32 @@ namespace Game.Player
 
             pivot.localPosition = basePosition;
             look.ResetPitch();
+        }
+
+        // Kamera sarsıntısı: her karede küçük rastgele kayma ve dönme, süre boyunca azalarak.
+        // Bakış girdisini kapatmaz; sarsıntı sırasında oyuncuyu senaryo dondurur.
+        public void PlayShake(float duration)
+        {
+            StartCoroutine(ShakeRoutine(duration));
+        }
+
+        private IEnumerator ShakeRoutine(float duration)
+        {
+            Transform pivot = look.CameraPivot;
+            Vector3 basePosition = pivot.localPosition;
+            Quaternion baseRotation = pivot.localRotation;
+
+            for (float t = 0f; t < duration; t += Time.deltaTime)
+            {
+                float strength = 1f - t / duration;
+                pivot.localPosition = basePosition + Random.insideUnitSphere * shakeOffset * strength;
+                pivot.localRotation = baseRotation * Quaternion.Euler(
+                    Random.Range(-1f, 1f) * shakeAngle * strength, 0f, Random.Range(-1f, 1f) * shakeAngle * strength);
+                yield return null;
+            }
+
+            pivot.localPosition = basePosition;
+            pivot.localRotation = baseRotation;
         }
 
         private void ApplyUiState()

@@ -737,7 +737,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4290294450
   m_fontColor: {r: 0.7, g: 0.7, b: 0.72, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -750,7 +750,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -3186,7 +3186,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -3310,7 +3310,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4287417561
   m_fontColor: {r: 0.85, g: 0.8, b: 0.55, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -3323,7 +3323,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -5514,6 +5514,7 @@ MonoBehaviour:
   sequence: {fileID: 11400000, guid: 6d195323d6963ee44bc8013e8516f5f5, type: 2}
   player: {fileID: 8202374547902342484}
   fader: {fileID: 1653371749}
+  atmosphere: {fileID: 5943563419597581559}
   deathDuration: 1.5
   airlockCloseDuration: 0.6
 --- !u!114 &5943563419597581559
@@ -5533,6 +5534,7 @@ MonoBehaviour:
   fogStart: 6
   fogEnd: 30
   ambientColor: {r: 0.35, g: 0.36, b: 0.4, a: 1}
+  sun: {fileID: 1231954997}
 --- !u!114 &5943563419597581560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5825,6 +5827,11 @@ MonoBehaviour:
   look: {fileID: 5549087657369791501}
   interactor: {fileID: 4495018285342148646}
   hand: {fileID: 682547020317846470}
+  wakeDrop: 0.9
+  wakeStartPitch: -80
+  wakeStartRoll: 20
+  shakeOffset: 0.06
+  shakeAngle: 6
 --- !u!114 &8202374547902342485
 MonoBehaviour:
   m_ObjectHideFlags: 0

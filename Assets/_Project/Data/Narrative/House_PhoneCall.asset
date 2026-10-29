@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 414e4f872c67b804da9cac48c9471f5e, type: 3}
+  m_Name: House_PhoneCall
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.AnnouncementDefinition
+  speaker: {fileID: 11400000, guid: 1add2fe3f4e5fd242a57b4849bc5e38e, type: 2}
+  lines:
+  - ...Denek 7.
+  - "Konum do\u011Fruland\u0131. Toplama ekibi yolda."
+  playOnce: 1
+  linePause: 0.4

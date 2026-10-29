@@ -15,7 +15,7 @@ namespace Game.Story
         {
             Delay,        // Sadece bekle
             PlayerInZone, // Oyuncu alana girene kadar bekle
-            Signal        // Signal() çağrılana kadar bekle (örnek: bir nesneyle etkileşim)
+            Signal        // Signal("anahtar") çağrılana kadar bekle (örnek: telefon açıldı)
         }
 
         [Serializable]
@@ -27,12 +27,15 @@ namespace Game.Story
             [SerializeField] private float delay;
             [Tooltip("Sadece PlayerInZone için.")]
             [SerializeField] private ScriptZone zone;
+            [Tooltip("Sadece Signal için. Bu adım bu anahtarla gelen sinyali bekler.")]
+            [SerializeField] private string signalKey;
             [SerializeField] private UnityEvent action;
 
             public string Label => label;
             public WaitType Wait => wait;
             public float Delay => delay;
             public ScriptZone Zone => zone;
+            public string SignalKey => signalKey;
             public UnityEvent Action => action;
         }
 
@@ -40,8 +43,9 @@ namespace Game.Story
         [SerializeField] private bool playOnStart;
         [SerializeField] private List<Step> steps = new();
 
-        // Sinyal, adım ona gelmeden önce verildiyse de sayılır.
-        private bool signaled;
+        // Gelen sinyaller. Adım ona gelmeden önce verilen sinyal de saklanır ve sayılır.
+        // Anahtarlar ayrı tutulur: not telefondan önce okunsa da telefon adımını geçirmez.
+        private readonly HashSet<string> signals = new();
         private Coroutine running;
 
         private void Start()
@@ -59,13 +63,13 @@ namespace Game.Story
                 StopCoroutine(running);
             }
 
-            signaled = false;
+            signals.Clear();
             running = StartCoroutine(Run());
         }
 
-        public void Signal()
+        public void Signal(string key)
         {
-            signaled = true;
+            signals.Add(key);
         }
 
         // Ölçekli zaman: duraklatınca senaryo da bekler.
@@ -79,8 +83,8 @@ namespace Game.Story
                         yield return new WaitUntil(() => step.Zone != null && step.Zone.PlayerInside);
                         break;
                     case WaitType.Signal:
-                        yield return new WaitUntil(() => signaled);
-                        signaled = false;
+                        yield return new WaitUntil(() => signals.Contains(step.SignalKey));
+                        signals.Remove(step.SignalKey);
                         break;
                 }
 

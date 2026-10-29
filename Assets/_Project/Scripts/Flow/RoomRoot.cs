@@ -23,11 +23,19 @@ namespace Game.Flow
         [Tooltip("Oyuncu bu sahneye girdiğinde (oda başladığında). Senaryolar buradan başlatılır.")]
         [SerializeField] private UnityEvent onEntered;
 
+        [Header("Işık")]
+        [Tooltip("Core'daki genel (yön) ışığın gücü. Gece ya da kapalı mekân için 0.")]
+        [SerializeField] private float sunIntensity = 1.2f;
+        [Tooltip("Hiçbir lambanın aydınlatmadığı yerlerin rengi.")]
+        [SerializeField] private Color ambientColor = new Color(0.35f, 0.36f, 0.4f);
+
         public ChamberController Chamber => chamber;
         public Airlock Airlock => airlock;
         public Transform ExitAnchor => exitAnchor;
         public Transform SpawnPoint => spawnPoint;
         public bool StartsBlack => startsBlack;
+        public float SunIntensity => sunIntensity;
+        public Color AmbientColor => ambientColor;
 
         public void NotifyEntered()
         {
