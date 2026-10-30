@@ -73,9 +73,13 @@ Shader "Retro/Screen"
                 uint2 pixel = uint2(floor(i.uv * _MainTex_TexelSize.zw)) % 4u;
                 float threshold = (bayer[pixel.y * 4 + pixel.x] + 0.5) / 16.0 - 0.5;
 
+                // Renk azaltma gamma uzayında: göz koyu tonlara duyarlı, doğrusal uzayda seviyeler
+                // koyuda seyrek kalır ve kanallar ayrışıp renkli şeritler oluşur.
                 float steps = _ColorLevels - 1.0;
-                color = floor(color * steps + 0.5 + threshold * _DitherStrength) / steps;
-                return fixed4(saturate(color), 1.0);
+                float3 gamma = pow(saturate(color), 1.0 / 2.2);
+                gamma = floor(gamma * steps + 0.5 + threshold * _DitherStrength) / steps;
+                color = pow(saturate(gamma), 2.2);
+                return fixed4(color, 1.0);
             }
             ENDCG
         }

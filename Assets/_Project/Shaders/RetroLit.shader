@@ -13,6 +13,12 @@ Shader "Retro/Lit"
         _SnapResolution ("Köşe ızgarası (sanal ekran pikseli)", Vector) = (480, 270, 0, 0)
         _AffineAmount ("Eğri doku miktarı", Range(0, 1)) = 0.6
         _Emission ("Kendi ışığı (lamba gibi yüzeyler)", Color) = (0, 0, 0, 0)
+        [Header(World UV)]
+        [Toggle] _WorldUV ("Dünya koordinatlı UV (ölçeklenmiş kutular için)", Float) = 0
+        _WorldTiling ("Metre başına tekrar (0.5 = dokunun bir kopyası 2 m)", Float) = 0.5
+        [Header(Alt bant)]
+        _BandMap ("Alt bant dokusu", 2D) = "white" {}
+        _BandHeight ("Bant yüksekliği (dünya y, 0 = kapalı)", Float) = 0
     }
 
     SubShader
@@ -35,6 +41,8 @@ Shader "Retro/Lit"
 
             TEXTURE2D(_BaseMap);
             SAMPLER(sampler_BaseMap);
+            TEXTURE2D(_BandMap);
+            SAMPLER(sampler_BandMap);
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseMap_ST;
@@ -42,6 +50,9 @@ Shader "Retro/Lit"
                 float4 _SnapResolution;
                 float _AffineAmount;
                 half4 _Emission;
+                float _WorldUV;
+                float _WorldTiling;
+                float _BandHeight;
             CBUFFER_END
 
             struct Attributes
@@ -58,6 +69,7 @@ Shader "Retro/Lit"
                 float3 affineUV : TEXCOORD1;    // xy = uv * w, z = w (düzeltmesiz koordinat için)
                 half3 lighting : TEXCOORD2;     // Köşede hesaplanan ışık
                 half fogFactor : TEXCOORD3;
+                float worldY : TEXCOORD4;
             };
 
             // Half-Lambert: dot'u -1..1 yerine 0..1'e taşıyıp kare alır (Valve, Half-Life).
@@ -80,12 +92,20 @@ Shader "Retro/Lit"
                 output.positionCS = positionCS;
 
                 float2 uv = TRANSFORM_TEX(input.uv, _BaseMap);
+                float3 normalWS = TransformObjectToWorldNormal(input.normalOS);
+                if (_WorldUV > 0.5)
+                {
+                    // Kutu izdüşümü: doku metreye bağlanır, nesnenin ölçeği uzatmaz.
+                    float3 n = abs(normalWS);
+                    float2 planar = n.y > 0.5 ? positionWS.xz : (n.x > n.z ? positionWS.zy : positionWS.xy);
+                    uv = planar * _WorldTiling;
+                }
+
                 output.uv = uv;
                 output.affineUV = float3(uv * positionCS.w, positionCS.w);
 
                 // Köşe bazlı ışık. Yumuşak (half-Lambert): ışık arka yüzlere de "sarılır";
                 // ışığa bakmayan yüzler simsiyah olmak yerine kademeli koyulaşır.
-                float3 normalWS = TransformObjectToWorldNormal(input.normalOS);
                 Light mainLight = GetMainLight();
                 half3 light = mainLight.color * WrapDiffuse(normalWS, mainLight.direction);
 
@@ -100,6 +120,7 @@ Shader "Retro/Lit"
                 output.lighting = light;
 
                 output.fogFactor = ComputeFogFactor(positionCS.z);
+                output.worldY = positionWS.y;
                 return output;
             }
 
@@ -108,7 +129,11 @@ Shader "Retro/Lit"
                 float2 affine = input.affineUV.xy / input.affineUV.z;
                 float2 uv = lerp(input.uv, affine, _AffineAmount);
 
-                half4 albedo = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv) * _BaseColor;
+                // Alt bant ayrı kutu değil, aynı yüzeyin dokusu: üst üste binen iki yüzey titreşirdi.
+                half4 albedo = input.worldY < _BandHeight
+                    ? SAMPLE_TEXTURE2D(_BandMap, sampler_BandMap, uv)
+                    : SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv);
+                albedo *= _BaseColor;
                 half3 color = albedo.rgb * input.lighting + _Emission.rgb;
                 color = MixFog(color, input.fogFactor);
                 return half4(color, 1.0);
@@ -135,6 +160,9 @@ Shader "Retro/Lit"
                 float4 _SnapResolution;
                 float _AffineAmount;
                 half4 _Emission;
+                float _WorldUV;
+                float _WorldTiling;
+                float _BandHeight;
             CBUFFER_END
 
             float4 vert(float4 positionOS : POSITION) : SV_POSITION
