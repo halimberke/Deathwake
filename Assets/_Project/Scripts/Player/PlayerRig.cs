@@ -26,6 +26,11 @@ namespace Game.Player
         [SerializeField] private float shakeOffset = 0.06f;
         [SerializeField] private float shakeAngle = 6f;
 
+        [Header("Ölüm")]
+        [Tooltip("Yere yığılırken kameranın ineceği mesafe (m) ve yana yatışı (derece).")]
+        [SerializeField] private float deathDrop = 1.2f;
+        [SerializeField] private float deathRoll = 75f;
+
         private CharacterController controller;
 
         // Birden fazla neden girdiyi engelleyebilir. Biri bitince diğerini bozmasın diye ayrı tutulur.
@@ -36,9 +41,13 @@ namespace Game.Player
         private bool reading; // Not ya da defter açık: oda saati akar ama oyuncu donar, fare serbest.
         private bool scripted; // Senaryo oyuncuyu tutuyor (uyanma, kaçırılma): her şey donar, fare kilitli.
 
+        private Vector3 pivotBasePosition;
+        private Coroutine cameraAnimation;
+
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
+            pivotBasePosition = look.CameraPivot.localPosition;
         }
 
         private void OnEnable()
@@ -115,14 +124,59 @@ namespace Game.Player
         // Bitince bakış ileri döner. Kontrol kendiliğinden açılmaz; senaryo SetScriptedBlock(false) der.
         public void PlayWakeUp(float duration)
         {
-            StartCoroutine(WakeUpRoutine(duration));
+            PlayCameraAnimation(WakeUpRoutine(duration));
+        }
+
+        // Ölüm: kamera yere yığılır ve yana devrilir. Yeniden doğunca (TeleportTo) kamera düzelir.
+        public void PlayDeath(float duration)
+        {
+            PlayCameraAnimation(DeathRoutine(duration));
+        }
+
+        private IEnumerator DeathRoutine(float duration)
+        {
+            SetScriptedBlock(true);
+            Transform pivot = look.CameraPivot;
+            Vector3 start = pivot.localPosition;
+            Quaternion startRotation = pivot.localRotation;
+            Quaternion fallen = startRotation * Quaternion.Euler(-15f, 0f, deathRoll);
+
+            for (float t = 0f; t < duration; t += Time.deltaTime)
+            {
+                // Hızlanarak düşer (yerçekimi gibi): k² eğrisi.
+                float k = t / duration;
+                k *= k;
+                pivot.localPosition = start + Vector3.down * deathDrop * k;
+                pivot.localRotation = Quaternion.Slerp(startRotation, fallen, k);
+                yield return null;
+            }
+
+            pivot.localPosition = start + Vector3.down * deathDrop;
+            pivot.localRotation = fallen;
+            cameraAnimation = null;
+        }
+
+        // Aynı anda tek kamera animasyonu: yenisi eskisini durdurur.
+        private void PlayCameraAnimation(IEnumerator routine)
+        {
+            StopCameraAnimation();
+            cameraAnimation = StartCoroutine(routine);
+        }
+
+        private void StopCameraAnimation()
+        {
+            if (cameraAnimation != null)
+            {
+                StopCoroutine(cameraAnimation);
+                cameraAnimation = null;
+            }
         }
 
         private IEnumerator WakeUpRoutine(float duration)
         {
             SetScriptedBlock(true);
             Transform pivot = look.CameraPivot;
-            Vector3 basePosition = pivot.localPosition;
+            Vector3 basePosition = pivotBasePosition;
 
             for (float t = 0f; t < duration; t += Time.deltaTime)
             {
@@ -134,6 +188,7 @@ namespace Game.Player
 
             pivot.localPosition = basePosition;
             look.ResetPitch();
+            cameraAnimation = null;
         }
 
         // Kamera sarsıntısı: her karede küçük rastgele kayma ve dönme, süre boyunca azalarak.
@@ -176,6 +231,12 @@ namespace Game.Player
             controller.enabled = false;
             transform.SetPositionAndRotation(point.position, Quaternion.Euler(0f, point.eulerAngles.y, 0f));
             controller.enabled = true;
+
+            // Yeni başlangıç: ölüm ya da senaryo animasyonundan kalan kamera duruşu ve kilit temizlenir.
+            StopCameraAnimation();
+            look.CameraPivot.localPosition = pivotBasePosition;
+            scripted = false;
+            ApplyUiState();
 
             movement.ResetVelocity();
             look.ResetPitch();

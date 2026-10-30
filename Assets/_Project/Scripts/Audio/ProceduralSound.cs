@@ -20,6 +20,17 @@ namespace Game.Audio
 
         private void Awake()
         {
+            EnsureReady();
+        }
+
+        // Başka bir bileşen bunu Awake'ten önce çalmak isteyebilir (aynı karede oluşan nesneler).
+        private void EnsureReady()
+        {
+            if (source != null)
+            {
+                return;
+            }
+
             clip = SfxSynth.Create(type);
             source = GetComponent<AudioSource>();
             source.clip = clip;
@@ -44,8 +55,16 @@ namespace Game.Audio
             Destroy(clip);
         }
 
-        public void Play() => source.Play();
+        public void Play()
+        {
+            EnsureReady();
+            source.Play();
+        }
 
-        public void Stop() => source.Stop();
+        public void Stop()
+        {
+            EnsureReady();
+            source.Stop();
+        }
     }
 }

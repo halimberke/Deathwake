@@ -22,9 +22,30 @@ namespace Game.Visual
         [Tooltip("Editor ve geliştirme build'inde bu tuş PS1 görünümünü açıp kapatır (karşılaştırma için).")]
         [SerializeField] private Key toggleKey = Key.F1;
 
+        private static readonly int DesaturateId = Shader.PropertyToID("_Desaturate");
+
         private RenderTexture target;
+        private Material screenMaterial;
         private int lastScreenWidth;
         private int lastScreenHeight;
+
+        // Ortak malzeme asset'i Play'de değişmesin diye çalışma anında kopyası kullanılır.
+        private void Awake()
+        {
+            screenMaterial = new Material(screenImage.material);
+            screenImage.material = screenMaterial;
+        }
+
+        private void OnDestroy()
+        {
+            Destroy(screenMaterial);
+        }
+
+        // 0 = normal, 1 = tamamen gri ve tonlu (ölüm efekti).
+        public void SetDesaturation(float amount)
+        {
+            screenMaterial.SetFloat(DesaturateId, amount);
+        }
 
         private void OnEnable()
         {

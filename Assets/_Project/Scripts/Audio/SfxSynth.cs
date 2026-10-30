@@ -8,7 +8,9 @@ namespace Game.Audio
         Knock,     // Kapıya üç vuruş
         TvStatic,  // Televizyon cızırtısı (döngü)
         Thud,      // Tek, ağır, tok ses
-        Heartbeat  // Kalp atışı (döngü)
+        Heartbeat, // Kalp atışı (döngü)
+        EchoAppear, // Yankı belirirken: yükselen, cızırtılı bir süpürme
+        Tinnitus    // Ölüm anı: kulak çınlaması
     }
 
     // Geçici efekt sesleri kodla üretilir. Ses adımında gerçek kayıtlarla değiştirilebilir.
@@ -26,6 +28,8 @@ namespace Game.Audio
                 SfxType.TvStatic => TvStatic(),
                 SfxType.Thud => Thud(),
                 SfxType.Heartbeat => Heartbeat(),
+                SfxType.EchoAppear => EchoAppear(),
+                SfxType.Tinnitus => Tinnitus(),
                 _ => new float[1]
             };
 
@@ -97,6 +101,40 @@ namespace Game.Audio
             var data = new float[Samples(0.9f)];
             AddTone(data, 0f, 55f, 18f, 1f);
             AddTone(data, 0.28f, 65f, 20f, 0.7f);
+            return data;
+        }
+
+        // Frekansı 150 Hz'den 1200 Hz'e süzülen bir ton + giderek artan cızırtı. Başta ve sonda yumuşak.
+        private static float[] EchoAppear()
+        {
+            var data = new float[Samples(0.8f)];
+            var random = new System.Random(11);
+            float phase = 0f;
+            for (int n = 0; n < data.Length; n++)
+            {
+                float t = n / (float)data.Length;
+                phase += Mathf.Lerp(150f, 1200f, t * t) / SampleRate;
+                float tone = Mathf.Sin(2f * Mathf.PI * phase);
+                float noise = ((float)random.NextDouble() * 2f - 1f) * t;
+                float envelope = Mathf.Sin(Mathf.PI * t);
+                data[n] = (tone * 0.6f + noise * 0.4f) * envelope;
+            }
+
+            return data;
+        }
+
+        // 3.8 kHz'lik ince bir ton: aniden başlar, yavaşça söner. Başında boğuk bir darbe.
+        private static float[] Tinnitus()
+        {
+            var data = new float[Samples(3f)];
+            for (int n = 0; n < data.Length; n++)
+            {
+                float t = n / (float)SampleRate;
+                float ring = Mathf.Sin(2f * Mathf.PI * 3800f * t) * Mathf.Min(1f, t / 0.05f) * Mathf.Exp(-t * 0.8f) * 0.35f;
+                float hit = Mathf.Sin(2f * Mathf.PI * 50f * t) * Mathf.Exp(-t * 10f);
+                data[n] = ring + hit;
+            }
+
             return data;
         }
 

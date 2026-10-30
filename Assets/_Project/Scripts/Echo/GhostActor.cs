@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Game.Chamber;
 using Game.Interaction;
@@ -24,6 +25,33 @@ namespace Game.Echo
         private IHoldable activeHold;
 
         public HandSlot Hand => hand;
+
+        // Görsel için: yankı bir eylem yaptı (bastı, tuttu, bıraktı).
+        public event Action ActionPerformed;
+        // Kayıt bitti. Dinleyen varsa (görsel) yankıyı o kapatır; yoksa hemen kaybolur.
+        public event Action Finished;
+
+        // Sıradaki eyleme kalan süre (sn). Eylem kalmadıysa sonsuz. Eylem uyarısı (parlama) bunu kullanır.
+        public float TimeUntilNextAction
+        {
+            get
+            {
+                if (recording == null || finished)
+                {
+                    return float.PositiveInfinity;
+                }
+
+                for (int i = eventCursor; i < recording.Events.Count; i++)
+                {
+                    if (recording.Events[i].Type != EchoEventType.HoldEnd)
+                    {
+                        return recording.Events[i].Time - clock.Time;
+                    }
+                }
+
+                return float.PositiveInfinity;
+            }
+        }
 
         // Göz hizası (bakış noktası). Taret gibi sistemler yankıyı görüp görmediğini bununla ölçer.
         public Transform Eye => cameraPivot;
@@ -147,6 +175,11 @@ namespace Game.Echo
                     ReleaseHold();
                     break;
             }
+
+            if (echoEvent.Type != EchoEventType.HoldEnd)
+            {
+                ActionPerformed?.Invoke();
+            }
         }
 
         private void ExecuteHoldStart(EchoEvent echoEvent)
@@ -235,7 +268,16 @@ namespace Game.Echo
                 item.Release(item.transform.position, Quaternion.Euler(0f, transform.eulerAngles.y, 0f));
             }
 
-            gameObject.SetActive(false);
+            // Oyun açısından yankı burada biter: taret gibi sistemler artık onu görmez.
+            active.Remove(this);
+            if (Finished != null)
+            {
+                Finished.Invoke();
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
         }
 
         private void LogSkipped(EchoEvent echoEvent, string reason)

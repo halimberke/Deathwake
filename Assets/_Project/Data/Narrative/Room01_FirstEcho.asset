@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.AnnouncementDefinition
   speaker: {fileID: 11400000, guid: e06fb045e1bb5824a9b35a3d2f7e01ab, type: 2}
   lines:
-  - "\xD6nceki deneme kayd\u0131 oynat\u0131l\u0131yor."
-  - "Kayd\u0131n\u0131zla birlikte \xE7al\u0131\u015F\u0131n."
+  - "Kal\u0131nt\u0131 tespit edildi."
+  - "Etkile\u015Fim g\xF6zlemleniyor."
   playOnce: 1
   linePause: 0.4
