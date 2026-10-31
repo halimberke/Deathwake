@@ -1,4 +1,5 @@
 using Game.Flow;
+using Game.Settings;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -20,6 +21,7 @@ namespace Game.Chamber
 
         public bool IsFastForwarding { get; private set; }
         public float Speed => speed;
+        public string KeyLabel => KeyLabels.Get(fastForwardAction.action);
 
         // Aktif oda ActiveChamber'dan okunur; oda yoksa hızlandırma kapalıdır.
         public bool IsAvailable

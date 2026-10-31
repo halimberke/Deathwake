@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57ec451fca1ee1e48b88b598128b84ea, type: 3}
+  m_Name: KeybindCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Settings.KeybindCatalog
+  entries:
+  - label: "\u0130leri"
+    action: {fileID: -1246895598473198080, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    compositePart: up
+  - label: Geri
+    action: {fileID: -1246895598473198080, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    compositePart: down
+  - label: Sola
+    action: {fileID: -1246895598473198080, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    compositePart: left
+  - label: "Sa\u011Fa"
+    action: {fileID: -1246895598473198080, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    compositePart: right
+  - label: "Z\u0131pla"
+    action: {fileID: 335763634227698153, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    compositePart: 
+  - label: "Ko\u015F"
+    action: {fileID: 7983440169816151513, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    compositePart: 
+  - label: "Etkile\u015Fim"
+    action: {fileID: 1781555164194001046, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    compositePart: 
+  - label: "Zaman\u0131 h\u0131zland\u0131r"
+    action: {fileID: 725429103419120481, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    compositePart: 
+  - label: Defter
+    action: {fileID: 6990287954222072563, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    compositePart: 

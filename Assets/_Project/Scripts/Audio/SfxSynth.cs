@@ -10,7 +10,10 @@ namespace Game.Audio
         Thud,      // Tek, ağır, tok ses
         Heartbeat, // Kalp atışı (döngü)
         EchoAppear, // Yankı belirirken: yükselen, cızırtılı bir süpürme
-        Tinnitus    // Ölüm anı: kulak çınlaması
+        Tinnitus,   // Ölüm anı: kulak çınlaması
+        UiHover,    // Arayüz: seçim değişti (çok kısa, ince)
+        UiClick,    // Arayüz: onay (iki tonlu)
+        Drone       // Ana menü: alçak tesis uğultusu (döngü)
     }
 
     // Geçici efekt sesleri kodla üretilir. Ses adımında gerçek kayıtlarla değiştirilebilir.
@@ -30,6 +33,9 @@ namespace Game.Audio
                 SfxType.Heartbeat => Heartbeat(),
                 SfxType.EchoAppear => EchoAppear(),
                 SfxType.Tinnitus => Tinnitus(),
+                SfxType.UiHover => UiBlip(1800f, 0.028f),
+                SfxType.UiClick => UiClick(),
+                SfxType.Drone => Drone(),
                 _ => new float[1]
             };
 
@@ -133,6 +139,39 @@ namespace Game.Audio
                 float ring = Mathf.Sin(2f * Mathf.PI * 3800f * t) * Mathf.Min(1f, t / 0.05f) * Mathf.Exp(-t * 0.8f) * 0.35f;
                 float hit = Mathf.Sin(2f * Mathf.PI * 50f * t) * Mathf.Exp(-t * 10f);
                 data[n] = ring + hit;
+            }
+
+            return data;
+        }
+
+        private static float[] UiBlip(float frequency, float duration)
+        {
+            var data = new float[Samples(duration)];
+            AddTone(data, 0f, frequency, 3f / duration, 1f);
+            return data;
+        }
+
+        private static float[] UiClick()
+        {
+            var data = new float[Samples(0.09f)];
+            AddTone(data, 0f, 980f, 90f, 1f);
+            AddTone(data, 0.035f, 1470f, 80f, 0.8f);
+            return data;
+        }
+
+        // Frekanslar 8 saniyeye tam sayıda sığar: döngü tıkırtısız birleşir. Yavaş vuruş iki yakın tondan gelir.
+        private static float[] Drone()
+        {
+            const float length = 8f;
+            var data = new float[Samples(length)];
+            for (int n = 0; n < data.Length; n++)
+            {
+                float t = n / (float)data.Length * length;
+                float swell = 0.8f + 0.2f * Mathf.Sin(2f * Mathf.PI * t / length);
+                data[n] = swell * (Mathf.Sin(2f * Mathf.PI * 55f * t)
+                                   + 0.7f * Mathf.Sin(2f * Mathf.PI * 55.5f * t)
+                                   + 0.3f * Mathf.Sin(2f * Mathf.PI * 110.25f * t)
+                                   + 0.12f * Mathf.Sin(2f * Mathf.PI * 330f * t));
             }
 
             return data;

@@ -25,9 +25,12 @@ namespace Game.Visual
         private static readonly int DesaturateId = Shader.PropertyToID("_Desaturate");
 
         private RenderTexture target;
+        private Camera overrideCamera;
         private Material screenMaterial;
         private int lastScreenWidth;
         private int lastScreenHeight;
+
+        private Camera ActiveCamera => overrideCamera != null ? overrideCamera : worldCamera;
 
         // Ortak malzeme asset'i Play'de değişmesin diye çalışma anında kopyası kullanılır.
         private void Awake()
@@ -39,6 +42,27 @@ namespace Game.Visual
         private void OnDestroy()
         {
             Destroy(screenMaterial);
+        }
+
+        // Ana menünün canlı sahnesi gibi başka bir kameradan görüntü alır; oyuncu kamerası bu sırada kapanır.
+        public void UseCamera(Camera camera)
+        {
+            ActiveCamera.targetTexture = null;
+            worldCamera.enabled = false;
+            overrideCamera = camera;
+            Apply();
+        }
+
+        public void ClearCamera()
+        {
+            if (overrideCamera != null)
+            {
+                overrideCamera.targetTexture = null;
+            }
+
+            overrideCamera = null;
+            worldCamera.enabled = true;
+            Apply();
         }
 
         // 0 = normal, 1 = tamamen gri ve tonlu (ölüm efekti).
@@ -55,9 +79,9 @@ namespace Game.Visual
         // Play'den çıkarken ya da sahne kapanırken kamera ve görüntü bu bileşenden önce yok edilmiş olabilir.
         private void OnDisable()
         {
-            if (worldCamera != null)
+            if (ActiveCamera != null)
             {
-                worldCamera.targetTexture = null;
+                ActiveCamera.targetTexture = null;
             }
 
             if (screenImage != null)
@@ -87,7 +111,7 @@ namespace Game.Visual
         {
             if (!retroEnabled)
             {
-                worldCamera.targetTexture = null;
+                ActiveCamera.targetTexture = null;
                 screenImage.enabled = false;
                 ReleaseTarget();
                 return;
@@ -108,7 +132,7 @@ namespace Game.Visual
             };
             target.Create();
 
-            worldCamera.targetTexture = target;
+            ActiveCamera.targetTexture = target;
             screenImage.texture = target;
             screenImage.enabled = true;
         }
@@ -120,9 +144,9 @@ namespace Game.Visual
                 return;
             }
 
-            if (worldCamera != null && worldCamera.targetTexture == target)
+            if (ActiveCamera != null && ActiveCamera.targetTexture == target)
             {
-                worldCamera.targetTexture = null;
+                ActiveCamera.targetTexture = null;
             }
 
             target.Release();

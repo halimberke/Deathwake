@@ -13,6 +13,9 @@ namespace Game.Narrative
         // Not okunmak istendi. İkinci değer: deftere yeni mi girdi.
         public static event Action<NoteDefinition, bool> ReadRequested;
 
+        // Deftere yeni not girdi. Kayıt sistemi dinler.
+        public static event Action Added;
+
         public static IReadOnlyList<NoteDefinition> Notes => notes;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -20,6 +23,19 @@ namespace Game.Narrative
         {
             notes.Clear();
             ReadRequested = null;
+            Added = null;
+        }
+
+        // Kayıttan yükleme.
+        public static void Restore(IEnumerable<NoteDefinition> saved)
+        {
+            notes.Clear();
+            notes.AddRange(saved);
+        }
+
+        public static void Clear()
+        {
+            notes.Clear();
         }
 
         public static void Read(NoteDefinition note)
@@ -33,6 +49,7 @@ namespace Game.Narrative
             if (isNew)
             {
                 notes.Add(note);
+                Added?.Invoke();
             }
 
             ReadRequested?.Invoke(note, isNew);

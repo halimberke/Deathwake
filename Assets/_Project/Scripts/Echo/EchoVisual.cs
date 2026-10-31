@@ -20,6 +20,13 @@ namespace Game.Echo
         [SerializeField] private float flashFadeSpeed = 4f;
         [SerializeField] private ProceduralSound appearSound;
 
+        [Header("Yürüyüş")]
+        [SerializeField] private MeshFilter bodyMesh;
+        [Tooltip("Adım pozları. Yürüdükçe sırayla değişir: yumuşak geçiş yok, PS1 tarzı kesik yürüyüş.")]
+        [SerializeField] private Mesh[] stepPoses;
+        [Tooltip("Bir poz kaç metre yürüyüşte değişir. Yankı durunca poz da durur.")]
+        [SerializeField] private float stepLength = 0.7f;
+
         private static readonly int MaterializeId = Shader.PropertyToID("_Materialize");
         private static readonly int GlowId = Shader.PropertyToID("_Glow");
         private static readonly int BaseHeightId = Shader.PropertyToID("_BaseHeight");
@@ -29,6 +36,8 @@ namespace Game.Echo
         private float materialize;
         private float flash;
         private bool vanishing;
+        private Vector3 lastPosition;
+        private float walked;
 
         private void Awake()
         {
@@ -42,6 +51,8 @@ namespace Game.Echo
             actor.Finished += HandleFinished;
             materialize = 0f;
             vanishing = false;
+            lastPosition = transform.position;
+            walked = 0f;
             if (appearSound != null)
             {
                 appearSound.Play();
@@ -80,6 +91,8 @@ namespace Game.Echo
                 materialize = Mathf.Min(1f, materialize + Time.deltaTime / materializeDuration);
             }
 
+            UpdateStep();
+
             // Eyleme yaklaştıkça 0'dan 1'e çıkan uyarı; eylem anında ayrıca parlama.
             float lead = actor.TimeUntilNextAction;
             float warning = lead <= telegraphLead ? 1f - Mathf.Max(0f, lead) / telegraphLead : 0f;
@@ -91,6 +104,20 @@ namespace Game.Echo
             foreach (Renderer target in renderers)
             {
                 target.SetPropertyBlock(block);
+            }
+        }
+
+        // Yürünen yatay mesafeye göre poz seçilir.
+        private void UpdateStep()
+        {
+            Vector3 moved = transform.position - lastPosition;
+            moved.y = 0f;
+            walked += moved.magnitude;
+            lastPosition = transform.position;
+
+            if (stepPoses.Length > 0)
+            {
+                bodyMesh.sharedMesh = stepPoses[Mathf.FloorToInt(walked / stepLength) % stepPoses.Length];
             }
         }
     }

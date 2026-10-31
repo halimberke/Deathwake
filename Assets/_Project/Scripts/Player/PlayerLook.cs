@@ -26,6 +26,11 @@ namespace Game.Player
         // Senaryo animasyonları (uyanma) kamerayı geçici olarak buradan oynatır.
         public Transform CameraPivot => cameraPivot;
 
+        public void SetSensitivity(float value)
+        {
+            sensitivity = value;
+        }
+
         // Fare yok sayılır, imleç kilitli kalır. Örnek: zaman hızlandırılırken.
         public void SetInputBlocked(bool blocked)
         {

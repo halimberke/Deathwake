@@ -10,7 +10,8 @@ namespace Game.Chamber
         [SerializeField] private TMP_Text label;
         [Tooltip("Boşsa hızlandırma bilgisi gösterilmez.")]
         [SerializeField] private ChamberTimeControl timeControl;
-        [SerializeField] private string fastForwardHint = "[F] hızlandır";
+        [Tooltip("{0} = atanmış tuş.")]
+        [SerializeField] private string fastForwardHint = "[{0}] hızlandır";
 
         private void Update()
         {
@@ -43,7 +44,7 @@ namespace Game.Chamber
 
             return timeControl.IsFastForwarding
                 ? $"   >> ×{timeControl.Speed:0}"
-                : $"   {fastForwardHint}";
+                : "   " + string.Format(fastForwardHint, timeControl.KeyLabel);
         }
     }
 }

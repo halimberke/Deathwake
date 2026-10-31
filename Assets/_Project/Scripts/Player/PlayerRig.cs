@@ -106,6 +106,13 @@ namespace Game.Player
             ApplyUiState();
         }
 
+        // Ana menü: oyuncu sahnede yok sayılır; yerçekimi işlemez, fare serbest.
+        public void SetMenuMode(bool value)
+        {
+            movement.enabled = !value;
+            SetPaused(value);
+        }
+
         // Not okuma ve defter: hareket, bakış ve etkileşim donar, fare serbest kalır. Zaman akmaya devam eder.
         public void SetReading(bool value)
         {

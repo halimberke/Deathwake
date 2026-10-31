@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Game.Chamber;
 using Game.Flow;
 using Game.Player;
+using Game.Settings;
+using Game.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -30,6 +32,9 @@ namespace Game.Narrative
         [SerializeField] private TMP_Text readerBody;
         [Tooltip("El yazısı notun kâğıdı bu kadar eğik durur (derece).")]
         [SerializeField] private float handwrittenTilt = -2f;
+        [SerializeField] private TMP_Text readerHint;
+        [Tooltip("{0} = etkileşim tuşu, {1} = defter tuşu.")]
+        [SerializeField] private string readerHintFormat = "{0} / {1}: kapat";
 
         [Header("Defter")]
         [SerializeField] private GameObject notebookPanel;
@@ -38,9 +43,15 @@ namespace Game.Narrative
         [SerializeField] private Image pagePaper;
         [SerializeField] private TMP_Text pageTitle;
         [SerializeField] private TMP_Text pageBody;
+        [SerializeField] private TMP_Text notebookHint;
+        [Tooltip("{0} = defter tuşu.")]
+        [SerializeField] private string notebookHintFormat = "{0}: kapat";
 
         [Header("Bildirim")]
         [SerializeField] private CanvasGroup addedToast;
+        [SerializeField] private TMP_Text addedToastLabel;
+        [Tooltip("{0} = defter tuşu.")]
+        [SerializeField] private string addedToastFormat = "Deftere eklendi   [{0}]";
         [SerializeField] private float toastDuration = 2.5f;
 
         [Header("Kâğıt ve mürekkep")]
@@ -48,6 +59,9 @@ namespace Game.Narrative
         [SerializeField] private Color typedInk = new Color(0.1f, 0.1f, 0.1f);
         [SerializeField] private Color handwrittenPaper = new Color(0.82f, 0.78f, 0.66f);
         [SerializeField] private Color handwrittenInk = new Color(0.12f, 0.16f, 0.35f);
+        [Tooltip("Daktilo notlar: resmî belge görünümü.")]
+        [SerializeField] private TMP_FontAsset typedFont;
+        [SerializeField] private TMP_FontAsset handwrittenFont;
 
         // Duraklatma menüsü bakar: panel açıkken ya da bu karede kapandıysa Esc menüyü açmaz.
         public static bool BlocksPause => IsOpen || closedFrame == Time.frameCount;
@@ -56,6 +70,7 @@ namespace Game.Narrative
         private static int closedFrame = -1;
 
         private readonly List<Button> entries = new();
+        private readonly Dictionary<NoteDefinition, MenuItem> entryItems = new();
         private int openedFrame = -1;
         private bool toastPending;
         private Coroutine toastRoutine;
@@ -91,7 +106,7 @@ namespace Game.Narrative
 
         private void Update()
         {
-            if (GamePause.IsPaused)
+            if (GamePause.IsPaused || MainMenu.IsOpen)
             {
                 return;
             }
@@ -125,6 +140,8 @@ namespace Game.Narrative
             readerPanel.SetActive(true);
             notebookPanel.SetActive(false);
             ApplyPaper(readerPaper, readerTitle, readerBody, note);
+            readerHint.text = string.Format(readerHintFormat,
+                KeyLabels.Get(interactAction.action), KeyLabels.Get(notebookAction.action));
             readerPaper.rectTransform.localRotation =
                 Quaternion.Euler(0f, 0f, note.Style == NoteStyle.Handwritten ? handwrittenTilt : 0f);
             SetOpen(true);
@@ -150,6 +167,7 @@ namespace Game.Narrative
                 ShowPage(notes[notes.Count - 1]);
             }
 
+            notebookHint.text = string.Format(notebookHintFormat, KeyLabels.Get(notebookAction.action));
             readerPanel.SetActive(false);
             notebookPanel.SetActive(true);
             SetOpen(true);
@@ -163,6 +181,7 @@ namespace Game.Narrative
             }
 
             entries.Clear();
+            entryItems.Clear();
 
             foreach (NoteDefinition note in Notebook.Notes)
             {
@@ -171,12 +190,19 @@ namespace Game.Narrative
                 entry.GetComponentInChildren<TMP_Text>().text = note.Title;
                 entry.onClick.AddListener(() => ShowPage(note));
                 entries.Add(entry);
+                entryItems[note] = entry.GetComponent<MenuItem>();
             }
         }
 
         private void ShowPage(NoteDefinition note)
         {
             ApplyPaper(pagePaper, pageTitle, pageBody, note);
+
+            // Açık sayfanın başlığı listede vurgulu kalır.
+            foreach (KeyValuePair<NoteDefinition, MenuItem> pair in entryItems)
+            {
+                pair.Value.SetTabActive(pair.Key == note);
+            }
         }
 
         private void ApplyPaper(Image paper, TMP_Text title, TMP_Text body, NoteDefinition note)
@@ -185,6 +211,10 @@ namespace Game.Narrative
             paper.color = handwritten ? handwrittenPaper : typedPaper;
             Color ink = handwritten ? handwrittenInk : typedInk;
             FontStyles style = handwritten ? FontStyles.Italic : FontStyles.Normal;
+
+            TMP_FontAsset font = handwritten ? handwrittenFont : typedFont;
+            title.font = font;
+            body.font = font;
 
             title.text = note.Title;
             title.color = ink;
@@ -203,6 +233,7 @@ namespace Game.Narrative
             if (toastPending)
             {
                 toastPending = false;
+                addedToastLabel.text = string.Format(addedToastFormat, KeyLabels.Get(notebookAction.action));
                 if (toastRoutine != null)
                 {
                     StopCoroutine(toastRoutine);

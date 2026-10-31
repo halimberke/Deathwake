@@ -12,7 +12,6 @@ namespace Game.Interaction
         [SerializeField] private TMP_Text promptText;
 
         [Header("Görünüm")]
-        [SerializeField] private string keyLabel = "E";
         [SerializeField] private string dropPrompt = "Yerleştir";
         [SerializeField] private string noRoomPrompt = "Yer yok";
         [SerializeField] private Color idleColor = new Color(1f, 1f, 1f, 0.5f);
@@ -33,7 +32,7 @@ namespace Game.Interaction
                 bool hasRoom = interactor.Hand.TryGetPlacement(out _, out bool valid) && valid;
                 crosshair.color = hasRoom ? idleColor : blockedColor;
                 promptText.text = hasRoom
-                    ? $"{keyLabel}: {dropPrompt} ({interactor.Hand.HeldItem.DisplayName})"
+                    ? $"{interactor.KeyLabel}: {dropPrompt} ({interactor.Hand.HeldItem.DisplayName})"
                     : noRoomPrompt;
                 return;
             }
@@ -48,7 +47,7 @@ namespace Game.Interaction
             string prompt = target.GetPrompt(interactor);
 
             crosshair.color = canInteract ? activeColor : blockedColor;
-            promptText.text = canInteract ? $"{keyLabel}: {prompt}" : prompt;
+            promptText.text = canInteract ? $"{interactor.KeyLabel}: {prompt}" : prompt;
         }
     }
 }

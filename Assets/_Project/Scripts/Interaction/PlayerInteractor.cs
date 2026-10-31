@@ -1,4 +1,5 @@
 using System;
+using Game.Settings;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,6 +22,9 @@ namespace Game.Interaction
         [SerializeField] private HandSlot hand;
 
         public HandSlot Hand => hand;
+
+        // Etkileşim tuşunun o an atanmış adı.
+        public string KeyLabel => KeyLabels.Get(interactAction.action);
 
         // Hedef değiştiğinde (yeni nesneye bakınca ya da boşluğa dönünce) tetiklenir. Null olabilir.
         public event Action<IInteractable> TargetChanged;

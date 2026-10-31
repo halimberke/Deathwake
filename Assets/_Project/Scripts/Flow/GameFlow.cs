@@ -20,6 +20,8 @@ namespace Game.Flow
         [SerializeField] private PlayerRig player;
         [SerializeField] private ScreenFader fader;
         [SerializeField] private RetroAtmosphere atmosphere;
+        [SerializeField] private MainMenu mainMenu;
+        [SerializeField] private GameSave save;
 
         [Header("Süreler (saniye)")]
         [Tooltip("Ölüm anından karartma başlayana kadar.")]
@@ -47,7 +49,8 @@ namespace Game.Flow
             FlowRequests.AdvanceRequested -= HandleAdvanceRequested;
         }
 
-        // Bir oda sahnesi doğrudan Play'le açıldıysa oyun ondan başlar; yoksa sıranın ilk sahnesinden.
+        // Bir oda sahnesi doğrudan Play'le açıldıysa (test) oyun ondan başlar, kayda dokunulmaz.
+        // Yoksa ana menü açılır.
         private IEnumerator Start()
         {
             // Doğrudan açılan oda sahnesinin yüklemesi bitsin.
@@ -65,16 +68,60 @@ namespace Game.Flow
             }
             else
             {
-                currentIndex = sequence.Count > 0 ? 0 : -1;
-                if (currentIndex < 0)
-                {
-                    Debug.LogError("Oyun sırasında hiç sahne yok.", this);
-                    yield break;
-                }
-
-                yield return LoadRoom(sequence[currentIndex].SceneName, room => current = room);
+                yield return mainMenu.Open();
+                yield break;
             }
 
+            yield return BeginCurrent();
+        }
+
+        public void StartNewGame()
+        {
+            save.Delete();
+            Notebook.Clear();
+            save.Recording = true;
+            StartCoroutine(LoadAndBegin(0));
+        }
+
+        public void ContinueGame()
+        {
+            if (!save.TryLoad(out string sceneName) || sequence.IndexOfScene(sceneName) < 0)
+            {
+                StartNewGame();
+                return;
+            }
+
+            save.Recording = true;
+            StartCoroutine(LoadAndBegin(sequence.IndexOfScene(sceneName)));
+        }
+
+        // Duraklatma menüsünden: her şey sıfırlanır, Core baştan yüklenir, ana menü açılır.
+        public void ReturnToMainMenu()
+        {
+            GamePause.SetPaused(false);
+            ActiveChamber.Set(null);
+            Announcer.ClearAll();
+            ChamberSession.ClearAll();
+            Notebook.Clear();
+            SceneManager.LoadScene(gameObject.scene.name, LoadSceneMode.Single);
+        }
+
+        private IEnumerator LoadAndBegin(int index)
+        {
+            if (sequence.Count == 0)
+            {
+                Debug.LogError("Oyun sırasında hiç sahne yok.", this);
+                yield break;
+            }
+
+            fader.SetBlack();
+            currentIndex = index;
+            yield return LoadRoom(sequence[currentIndex].SceneName, room => current = room);
+            yield return BeginCurrent();
+        }
+
+        private IEnumerator BeginCurrent()
+        {
             currentPose = current.RootPose;
             SceneManager.SetActiveScene(current.gameObject.scene);
             player.TeleportTo(current.SpawnPoint);
@@ -85,6 +132,11 @@ namespace Game.Flow
 
             OpenAirlockForStart();
             EnterCurrent();
+
+            if (!current.StartsBlack && fader.IsBlack)
+            {
+                yield return fader.FadeIn();
+            }
         }
 
         private void EnterCurrent()
@@ -103,6 +155,11 @@ namespace Game.Flow
             }
 
             current.NotifyEntered();
+
+            if (currentIndex >= 0)
+            {
+                save.SetScene(sequence[currentIndex].SceneName);
+            }
 
             // Çıkışı olan sahnenin sonrası arka planda yüklenip kapısına hizalanır.
             if (next == null && currentIndex >= 0 && current.ExitAnchor != null)

@@ -1,58 +1,105 @@
+using Game.Chamber;
 using Game.Narrative;
 using Game.Player;
+using Game.Settings;
+using Game.UI;
+using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 namespace Game.Flow
 {
-    // Esc ile açılan duraklatma menüsü: devam, odayı sıfırla, çık.
+    // Esc ile açılan duraklatma menüsü. Esc'in bütün önceliği burada toplanır:
+    // onay penceresi, ayarlar, not/defter, sonra duraklatma.
     public class PauseMenu : MonoBehaviour
     {
         [SerializeField] private InputActionReference pauseAction;
-        [SerializeField] private GameObject panel;
-        [SerializeField] private Button resumeButton;
-        [SerializeField] private Button resetRoomButton;
-        [SerializeField] private Button quitButton;
+        [SerializeField] private UIPanel panel;
+        [SerializeField] private TMP_Text roomLabel;
+        [SerializeField] private MenuItem resumeItem;
+        [SerializeField] private MenuItem settingsItem;
+        [SerializeField] private MenuItem resetRoomItem;
+        [SerializeField] private MenuItem mainMenuItem;
+        [SerializeField] private MenuItem quitItem;
+        [SerializeField] private SettingsPanel settings;
+        [SerializeField] private ConfirmDialog confirm;
         [SerializeField] private PlayerRig player;
         [SerializeField] private GameFlow flow;
+        [Tooltip("Menü açıkken gizlenen oyun içi arayüz.")]
+        [SerializeField] private GameObject[] hideWhileOpen;
 
-        private void Awake()
-        {
-            panel.SetActive(false);
-        }
+        [Header("Yazılar")]
+        [Tooltip("{0} = deney kodu, {1} = oda adı, {2} = deneme sayısı.")]
+        [SerializeField] private string roomFormat = "{0}  /  {1}  /  DENEME {2}";
+        [SerializeField] private string leaveBody = "Bu odadaki ilerleme kaybolacak. Oyun son kayıttan devam eder.";
+        [SerializeField] private string resetTitle = "Oda sıfırlansın mı?";
+        [SerializeField] private string resetBody = "Bu odadaki bütün denemeler ve yankılar silinecek.";
+        [SerializeField] private string resetConfirm = "Odayı sıfırla";
+        [SerializeField] private string menuTitle = "Ana menüye dönülsün mü?";
+        [SerializeField] private string menuConfirm = "Ana menüye dön";
+        [SerializeField] private string quitTitle = "Oyundan çıkılsın mı?";
+        [SerializeField] private string quitConfirm = "Çık";
 
         private void OnEnable()
         {
             pauseAction.action.Enable();
-            resumeButton.onClick.AddListener(Resume);
-            resetRoomButton.onClick.AddListener(ResetRoom);
-            quitButton.onClick.AddListener(Quit);
+            resumeItem.Button.onClick.AddListener(Resume);
+            settingsItem.Button.onClick.AddListener(OpenSettings);
+            resetRoomItem.Button.onClick.AddListener(AskResetRoom);
+            mainMenuItem.Button.onClick.AddListener(AskMainMenu);
+            quitItem.Button.onClick.AddListener(AskQuit);
+            settings.Closed += HandleSettingsClosed;
         }
 
         private void OnDisable()
         {
             pauseAction.action.Disable();
-            resumeButton.onClick.RemoveListener(Resume);
-            resetRoomButton.onClick.RemoveListener(ResetRoom);
-            quitButton.onClick.RemoveListener(Quit);
+            resumeItem.Button.onClick.RemoveListener(Resume);
+            settingsItem.Button.onClick.RemoveListener(OpenSettings);
+            resetRoomItem.Button.onClick.RemoveListener(AskResetRoom);
+            mainMenuItem.Button.onClick.RemoveListener(AskMainMenu);
+            quitItem.Button.onClick.RemoveListener(AskQuit);
+            settings.Closed -= HandleSettingsClosed;
         }
 
         // Time.timeScale 0 iken de Update çalışır; girdi okunabilir.
         private void Update()
         {
-            // Not ya da defter açıksa Esc onu kapatır, menüyü açmaz.
-            if (pauseAction.action.WasPressedThisFrame() && !NotebookUI.BlocksPause)
+            if (!pauseAction.action.WasPressedThisFrame())
             {
-                if (GamePause.IsPaused)
+                return;
+            }
+
+            if (confirm.IsOpen)
+            {
+                confirm.Cancel();
+                return;
+            }
+
+            // Ayarlar ana menüden de duraklatmadan da açılmış olabilir.
+            if (settings.IsOpen)
+            {
+                if (!settings.BlocksClose)
                 {
-                    Resume();
+                    settings.Close();
                 }
-                else
-                {
-                    Pause();
-                }
+
+                return;
+            }
+
+            // Not ya da defter açıksa Esc onu kapatır, menüyü açmaz. Ana menüde Esc işlemez.
+            if (NotebookUI.BlocksPause || MainMenu.IsOpen)
+            {
+                return;
+            }
+
+            if (GamePause.IsPaused)
+            {
+                Resume();
+            }
+            else
+            {
+                Pause();
             }
         }
 
@@ -60,32 +107,70 @@ namespace Game.Flow
         {
             GamePause.SetPaused(true);
             player.SetPaused(true);
-            ClearSelection();
-            panel.SetActive(true);
+            SetGameHudVisible(false);
+            RefreshRoomLabel();
+
+            // Oda dışında (ev, hücre) sıfırlanacak bir deneme yok.
+            resetRoomItem.gameObject.SetActive(ActiveChamber.Current != null);
+            panel.Show(resumeItem.Button);
         }
 
         public void Resume()
         {
-            ClearSelection();
-            panel.SetActive(false);
+            panel.Hide();
+            SetGameHudVisible(true);
             player.SetPaused(false);
             GamePause.SetPaused(false);
         }
 
-        // EventSystem son tıklanan butonu "seçili" olarak hatırlar; menü yeniden açılınca
-        // o buton seçili/basılı renginde kalır. Her açılış ve kapanışta seçim temizlenir.
-        private static void ClearSelection()
+        private void RefreshRoomLabel()
         {
-            if (EventSystem.current != null)
+            ChamberController chamber = ActiveChamber.Current;
+            roomLabel.text = chamber == null
+                ? string.Empty
+                : string.Format(roomFormat, chamber.Definition.TitleCode,
+                    chamber.Definition.DisplayName.ToUpperInvariant(), chamber.Progress.AttemptCount);
+        }
+
+        private void SetGameHudVisible(bool visible)
+        {
+            foreach (GameObject item in hideWhileOpen)
             {
-                EventSystem.current.SetSelectedGameObject(null);
+                item.SetActive(visible);
             }
         }
 
-        private void ResetRoom()
+        private void OpenSettings()
         {
-            Resume();
-            flow.ResetCurrentRoom();
+            panel.Hide();
+            settings.Open();
+        }
+
+        private void HandleSettingsClosed()
+        {
+            if (GamePause.IsPaused && !MainMenu.IsOpen)
+            {
+                panel.Show(settingsItem.Button);
+            }
+        }
+
+        private void AskResetRoom()
+        {
+            confirm.Ask(resetTitle, resetBody, resetConfirm, panel, () =>
+            {
+                Resume();
+                flow.ResetCurrentRoom();
+            });
+        }
+
+        private void AskMainMenu()
+        {
+            confirm.Ask(menuTitle, leaveBody, menuConfirm, panel, flow.ReturnToMainMenu);
+        }
+
+        private void AskQuit()
+        {
+            confirm.Ask(quitTitle, leaveBody, quitConfirm, panel, Quit);
         }
 
         private void Quit()

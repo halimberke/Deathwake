@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5851179d657ed4c468b68020a1f36c3a, type: 3}
+  m_Name: NoteCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.NoteCatalog
+  notes:
+  - {fileID: 11400000, guid: bbf1da9c48d77c146a200cc29774da88, type: 2}
+  - {fileID: 11400000, guid: e7018cf5239a54b4f9285e974dd084d5, type: 2}
+  - {fileID: 11400000, guid: 329d6cc712670b047aa3e4af12461e6c, type: 2}
+  - {fileID: 11400000, guid: 2e0bfbe0aaeff0242bedb981e05ea5be, type: 2}

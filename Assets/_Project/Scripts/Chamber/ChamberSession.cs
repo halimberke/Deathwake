@@ -27,6 +27,12 @@ namespace Game.Chamber
             return progress;
         }
 
+        // Ana menüye dönüş.
+        public static void ClearAll()
+        {
+            progressByChamber.Clear();
+        }
+
         // "Odayı sıfırla": tüm denemeler ve yankılar silinir.
         public static void Clear(ChamberDefinition chamber)
         {

@@ -94,13 +94,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Echo.EchoVisual
   renderers:
   - {fileID: 392407032735744613}
-  - {fileID: 1470491359173994070}
   materializeDuration: 0.6
   vanishDuration: 0.5
   telegraphLead: 0.6
   actionFlash: 1.6
   flashFadeSpeed: 4
   appearSound: {fileID: 6725600723163932829}
+  bodyMesh: {fileID: 5968250795074144883}
+  stepPoses:
+  - {fileID: 1341418538462778276, guid: ab9532c0d18e0bc438c7e24c117bc96d, type: 3}
+  - {fileID: 8238166662282340317, guid: ffcb2b7acd61af24da5bbd371bc09404, type: 3}
+  stepLength: 0.7
 --- !u!1 &809168617406411124
 GameObject:
   m_ObjectHideFlags: 0
@@ -248,6 +252,7 @@ MonoBehaviour:
   spatial: 1
   volume: 0.6
   playOnStart: 0
+  ignoreListenerPause: 0
 --- !u!1 &2358525601167471026
 GameObject:
   m_ObjectHideFlags: 0
@@ -275,8 +280,8 @@ Transform:
   m_GameObject: {fileID: 2358525601167471026}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.9, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 0.7}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4897972099685503655}
@@ -288,7 +293,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2358525601167471026}
-  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 1341418538462778276, guid: ab9532c0d18e0bc438c7e24c117bc96d, type: 3}
 --- !u!23 &392407032735744613
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -419,7 +424,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6837144518786291850
 Transform:
   m_ObjectHideFlags: 0

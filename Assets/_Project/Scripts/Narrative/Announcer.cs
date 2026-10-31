@@ -51,6 +51,13 @@ namespace Game.Narrative
             Requested.Invoke(announcement);
         }
 
+        // Ana menüye dönüş: bütün hafıza silinir.
+        public static void ClearAll()
+        {
+            played.Clear();
+            Stopped?.Invoke();
+        }
+
         // "Odayı sıfırla": çalan anons kesilir, odanın anonsları baştan çalabilir.
         public static void ResetChamber(ChamberDefinition chamber)
         {

@@ -14,6 +14,8 @@ namespace Game.Audio
         [Range(0f, 1f)]
         [SerializeField] private float volume = 0.8f;
         [SerializeField] private bool playOnStart;
+        [Tooltip("Oyun duraklatılınca susmasın (arayüz sesleri).")]
+        [SerializeField] private bool ignoreListenerPause;
 
         private AudioSource source;
         private AudioClip clip;
@@ -37,6 +39,7 @@ namespace Game.Audio
             source.loop = loop;
             source.volume = volume;
             source.playOnAwake = false;
+            source.ignoreListenerPause = ignoreListenerPause;
             source.spatialBlend = spatial ? 1f : 0f;
             source.minDistance = 1.5f;
             source.maxDistance = 15f;
