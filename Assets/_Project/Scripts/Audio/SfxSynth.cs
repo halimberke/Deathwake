@@ -13,7 +13,8 @@ namespace Game.Audio
         Tinnitus,   // Ölüm anı: kulak çınlaması
         UiHover,    // Arayüz: seçim değişti (çok kısa, ince)
         UiClick,    // Arayüz: onay (iki tonlu)
-        Drone       // Ana menü: alçak tesis uğultusu (döngü)
+        Drone,      // Ana menü: alçak tesis uğultusu (döngü)
+        GasHiss     // Gaz nozulları: basınçlı tıslama (döngü)
     }
 
     // Geçici efekt sesleri kodla üretilir. Ses adımında gerçek kayıtlarla değiştirilebilir.
@@ -36,6 +37,7 @@ namespace Game.Audio
                 SfxType.UiHover => UiBlip(1800f, 0.028f),
                 SfxType.UiClick => UiClick(),
                 SfxType.Drone => Drone(),
+                SfxType.GasHiss => GasHiss(),
                 _ => new float[1]
             };
 
@@ -172,6 +174,22 @@ namespace Game.Audio
                                    + 0.7f * Mathf.Sin(2f * Mathf.PI * 55.5f * t)
                                    + 0.3f * Mathf.Sin(2f * Mathf.PI * 110.25f * t)
                                    + 0.12f * Mathf.Sin(2f * Mathf.PI * 330f * t));
+            }
+
+            return data;
+        }
+
+        // Beyaz gürültüden fark alınarak tiz bırakılır: basınçlı gaz sesi. Gürültü olduğu için döngü fark edilmez.
+        private static float[] GasHiss()
+        {
+            var data = new float[Samples(3f)];
+            var random = new System.Random(13);
+            float last = 0f;
+            for (int n = 0; n < data.Length; n++)
+            {
+                float noise = (float)random.NextDouble() * 2f - 1f;
+                data[n] = noise - last * 0.7f;
+                last = noise;
             }
 
             return data;

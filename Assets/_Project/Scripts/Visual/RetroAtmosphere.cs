@@ -22,6 +22,22 @@ namespace Game.Visual
         [Tooltip("Core'daki genel (yön) ışık. Gücünü her sahne kendisi belirler.")]
         [SerializeField] private Light sun;
 
+        [Header("Gaz")]
+        [Tooltip("Oda gazla dolunca sisin başlangıç ve bitiş mesafesi (m).")]
+        [SerializeField] private float gasFogStart = 0.3f;
+        [SerializeField] private float gasFogEnd = 4f;
+
+        private float gasAmount;
+        private Color gasColor;
+
+        // 0 = temiz hava, 1 = oda gazla dolu. Sis yaklaşır ve gaz rengine döner.
+        public void SetGas(float amount, Color color)
+        {
+            gasAmount = Mathf.Clamp01(amount);
+            gasColor = color;
+            ApplyFog();
+        }
+
         // Sahneye girilince oyun akışı çağırır: o sahnenin genel ışığı ve ortam rengi.
         public void SetRoomLighting(float sunIntensity, Color ambient)
         {
@@ -53,11 +69,7 @@ namespace Game.Visual
 
         private void Apply()
         {
-            RenderSettings.fog = fog;
-            RenderSettings.fogMode = FogMode.Linear;
-            RenderSettings.fogColor = fogColor;
-            RenderSettings.fogStartDistance = fogStart;
-            RenderSettings.fogEndDistance = fogEnd;
+            ApplyFog();
 
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientLight = ambientColor;
@@ -66,6 +78,17 @@ namespace Game.Visual
             var probe = new SphericalHarmonicsL2();
             probe.AddAmbientLight(ambientColor);
             RenderSettings.ambientProbe = probe;
+        }
+
+        private void ApplyFog()
+        {
+            // Yumuşak başlangıç: gaz ilk saniyelerde uzakta belirir, sonra hızla yaklaşır.
+            float k = gasAmount * gasAmount;
+            RenderSettings.fog = fog;
+            RenderSettings.fogMode = FogMode.Linear;
+            RenderSettings.fogColor = Color.Lerp(fogColor, gasColor, k);
+            RenderSettings.fogStartDistance = Mathf.Lerp(fogStart, gasFogStart, k);
+            RenderSettings.fogEndDistance = Mathf.Lerp(fogEnd, gasFogEnd, k);
         }
 
 #if UNITY_EDITOR

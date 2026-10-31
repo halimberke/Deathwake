@@ -10416,7 +10416,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 240, y: -4.999817}
+  m_AnchoredPosition: {x: 240, y: -4.9997864}
   m_SizeDelta: {x: -760, y: -246}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1094578943
@@ -22667,7 +22667,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Visual.RetroScreen
   worldCamera: {fileID: 6458963074750426142}
   screenImage: {fileID: 1551267597}
-  verticalResolution: 270
+  verticalResolution: 480
   retroEnabled: 1
   toggleKey: 94
 --- !u!114 &5943563419597581561

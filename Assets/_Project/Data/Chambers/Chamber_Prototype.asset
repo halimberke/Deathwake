@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Chamber.ChamberDefinition
   titleCode: DENEY 01
   displayName: "Bekleyi\u015F"
-  attemptDuration: 45
+  attemptDuration: 40
   maxEchoes: 1
+  timeoutReason: "Gazdan bo\u011Fuldun"

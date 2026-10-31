@@ -99,7 +99,7 @@ namespace Game.Chamber
 
         private void HandleClockExpired()
         {
-            Kill("Süre doldu");
+            Kill(definition.TimeoutReason);
         }
 
         private void SetState(ChamberState next)
