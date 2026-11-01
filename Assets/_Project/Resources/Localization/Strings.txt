@@ -1,0 +1,158 @@
+# Çeviri tablosu. Sütunlar sekmeyle ayrılır. İlk sütun Türkçe metin ve anahtardır: oyundaki metinle birebir aynı olmalı.
+# Yeni dil için her satıra bir sütun eklenir. Alt satır \n diye yazılır. # ile başlayan satırlar okunmaz.
+tr	en
+Türkçe	English
+
+# Menü
+Devam et	Resume
+Devam Et	Continue
+Yeni Oyun	New Game
+Ayarlar	Settings
+Odayı sıfırla	Reset room
+Ana menü	Main menu
+Çıkış	Quit
+Çık	Quit
+Duraklatıldı	Paused
+Vazgeç	Cancel
+Onayla	Confirm
+TESİS 4  /  DENEK TERMİNALİ	FACILITY 4  /  SUBJECT TERMINAL
+GÖZLEM AKTİF	OBSERVATION ACTIVE
+ERKEN SÜRÜM  0.1	EARLY BUILD  0.1
+{0}  /  {1}  /  DENEME {2}	{0}  /  {1}  /  ATTEMPT {2}
+Bu odadaki ilerleme kaybolacak. Oyun son kayıttan devam eder.	Progress in this room will be lost. The game resumes from the last save.
+Oda sıfırlansın mı?	Reset this room?
+Bu odadaki bütün denemeler ve yankılar silinecek.	All attempts and echoes in this room will be erased.
+Ana menüye dönülsün mü?	Return to the main menu?
+Ana menüye dön	Return to main menu
+Oyundan çıkılsın mı?	Quit the game?
+Yeni oyun başlatılsın mı?	Start a new game?
+Mevcut kayıt silinecek. Bu işlem geri alınamaz.	Your current save will be deleted. This cannot be undone.
+Kaydı sil ve başla	Delete save and start
+
+# Ayarlar
+Genel	General
+Görüntü	Display
+Kontroller	Controls
+Geri	Back
+KONTROL	CONTROLS
+Fare hassasiyeti	Mouse sensitivity
+SES	AUDIO
+Ana ses	Master volume
+DİL	LANGUAGE
+Dil	Language
+EKRAN	SCREEN
+Tam ekran	Fullscreen
+Çözünürlük	Resolution
+Açık	On
+Kapalı	Off
+%{0}	{0}%
+KLAVYE VE FARE	KEYBOARD AND MOUSE
+Varsayılana dön	Reset to default
+Değiştirmek için tuşa tıkla.	Click a key to change it.
+Bir tuşa bas	Press a key
+Esc ile iptal et.	Press Esc to cancel.
+Tuş, {0} ile yer değiştirdi.	Key swapped with {0}.
+İleri	Forward
+Sola	Left
+Sağa	Right
+Zıpla	Jump
+Koş	Sprint
+Etkileşim	Interact
+Zamanı hızlandır	Fast-forward time
+Defter	Notebook
+Eylem	Action
+
+# Oyun ekranı
+Deneme {0}	Attempt {0}
+Öldün: {0}	You died: {0}
+Oda çözüldü	Room solved
+[{0}] hızlandır	[{0}] fast-forward
+{0} / {1}: kapat	{0} / {1}: close
+{0}: kapat	{0}: close
+Deftere eklendi   [{0}]	Added to notebook   [{0}]
+Henüz not yok.	No notes yet.
+Gazdan boğuldun	The gas suffocated you
+Taret seni vurdu	The turret shot you
+
+# Etkileşim
+Aç	Open
+Kapat	Close
+Kilidi aç	Unlock
+Kilitli	Locked
+{0}: {1} gerekli	{0}: {1} required
+Mekanizmayla açılır	Opens by mechanism
+Kabin kapısı	Airlock door
+Kepenk	Shutter
+Basılı tut	Hold
+Tutuluyor	Holding
+Bas	Press
+Çalışmıyor	Not working
+Kutuya koy	Place in box
+Geçiş kutusu	Pass-through box
+Al	Take
+Oku	Read
+Bırak	Place
+Yerleştir	Place
+Yer yok	No room
+Telefonu aç	Answer the phone
+Lambayı aç/kapat	Toggle lamp
+Su iç	Drink water
+Gözetleme deliğinden bak	Look through the peephole
+Kapıyı aç	Open the door
+Açılıyor	Opening
+
+# Odalar ve eşyalar
+DENEY 01	EXPERIMENT 01
+Bekleyiş	The Wait
+DENEY 02	EXPERIMENT 02
+Geçiş Kutusu	Pass-Through
+DENEY 03	EXPERIMENT 03
+Basamaklar	Steps
+DENEY 04	EXPERIMENT 04
+Gözetim	Surveillance
+Erişim Kartı	Access Card
+Küçük Kasa	Small Crate
+Büyük Kasa	Large Crate
+Test Anahtarı	Test Key
+
+# Konuşmacılar
+ANONS	INTERCOM
+TELEFON	PHONE
+
+# Anonslar: tesis soğuk ve kliniktir, yankıya 'kalıntı' (residual) der
+Denek 7 teslim alındı.	Subject 7 received.
+Uyanma prosedürü başlıyor.	Beginning wake procedure.
+Denek 7. Kapıdan çıkın ve koridoru izleyin.	Subject 7. Exit through the door and follow the corridor.
+Denek 7. Deney 01 başlıyor.	Subject 7. Experiment 01 is beginning.
+Bu odadan tek başınıza çıkamazsınız.	You cannot leave this room alone.
+Deneme sonlandı. Kalıntı bekleniyor.	Attempt terminated. Awaiting residual.
+Kalıntı tespit edildi.	Residual detected.
+Etkileşim gözlemleniyor.	Interaction under observation.
+Deney 01 tamamlandı. Sonraki bölmeye ilerleyin.	Experiment 01 complete. Proceed to the next section.
+Kalıntı bekleniyor.	Awaiting residual.
+Deney 02 tamamlandı.	Experiment 02 complete.
+Denek 7, kalıntılarınızla uyumunuz beklenenin üzerinde.	Subject 7, your compatibility with your residuals exceeds expectations.
+Deney 02. Bölmeler arası nesne aktarımı.	Experiment 02. Inter-compartment object transfer.
+
+# Ev: iç ses ve telefon
+Ağzım kurumuş. Biraz su içeyim.	My mouth is dry. I should get some water.
+...Denek 7.	...Subject 7.
+Konum doğrulandı. Toplama ekibi yolda.	Location confirmed. Retrieval team en route.
+Yanlış numara herhalde.	Must be a wrong number.
+Yatsam iyi olacak.	I should get to bed.
+...Fırtına yaklaşıyor.	...The storm is getting closer.
+Masada bir kâğıt var.	There's a paper on the desk.
+Bu saatte kim olabilir?	Who could it be at this hour?
+Kimse yok.	Nobody there.
+Sakin ol.	Stay calm.
+Uyu.	Sleep.
+
+# Notlar
+Masadaki not	Note on the desk
+Uyuma.\n\nGeri gelecekler.	Don't sleep.\n\nThey'll come back.
+Gözlem Kaydı — Denek 7	Observation Log — Subject 7
+Toplama: sorunsuz.\nHafıza: temiz.\nİlk tepki: beklenen aralıkta.\n\nEv ortamındaki not kaldırılmamış.\nSorumlu personel uyarıldı.	Retrieval: no incidents.\nMemory: clean.\nInitial response: within expected range.\n\nThe note in the home environment was not removed.\nResponsible staff have been warned.
+Tesis 4 — Denek Bilgilendirme Formu	Facility 4 — Subject Information Form
+Bulunduğunuz alan bir deney odasıdır.\n\nOda kapısı, kontrol düğmesi yalnızca basılı tutulduğu sürece açık kalır.\n\nDeney süresince tahliye gazı devreye girebilir. Panik yapmayın.\n\nHer denemeniz gözlem altındadır.	The area you are in is an experiment room.\n\nThe room door stays open only while the control button is held down.\n\nPurge gas may be released during the experiment. Do not panic.\n\nEvery attempt is under observation.
+Buruşuk kâğıt	Crumpled paper
+Camdaki kutu iki yöne açılıyor.\n\nKendine güven.\nO sensin.\n\n\nBunu daha önce de yazmadım mı?	The box in the glass opens both ways.\n\nTrust yourself.\nIt's you.\n\n\nDidn't I write this before?

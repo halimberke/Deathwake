@@ -17,6 +17,7 @@ namespace Game.Settings
         private const string WidthKey = "settings.width";
         private const string HeightKey = "settings.height";
         private const string BindingsKey = "settings.bindings";
+        private const string LanguageKey = "settings.language";
 
         public static event Action Changed;
 
@@ -26,6 +27,7 @@ namespace Game.Settings
         public static int Width { get; private set; }  // 0 = masaüstü çözünürlüğü
         public static int Height { get; private set; }
         public static string BindingOverrides { get; private set; } = string.Empty;
+        public static string Language { get; private set; }
 
         public static void Load()
         {
@@ -35,6 +37,7 @@ namespace Game.Settings
             Width = PlayerPrefs.GetInt(WidthKey, 0);
             Height = PlayerPrefs.GetInt(HeightKey, 0);
             BindingOverrides = PlayerPrefs.GetString(BindingsKey, string.Empty);
+            Language = PlayerPrefs.GetString(LanguageKey, DefaultLanguage());
         }
 
         public static void Save()
@@ -45,6 +48,7 @@ namespace Game.Settings
             PlayerPrefs.SetInt(WidthKey, Width);
             PlayerPrefs.SetInt(HeightKey, Height);
             PlayerPrefs.SetString(BindingsKey, BindingOverrides);
+            PlayerPrefs.SetString(LanguageKey, Language);
             PlayerPrefs.Save();
         }
 
@@ -71,6 +75,18 @@ namespace Game.Settings
             Width = width;
             Height = height;
             Changed?.Invoke();
+        }
+
+        public static void SetLanguage(string code)
+        {
+            Language = code;
+            Changed?.Invoke();
+        }
+
+        // İlk açılışta sistem dili: Türkçe sistemde Türkçe, diğerlerinde İngilizce.
+        private static string DefaultLanguage()
+        {
+            return Application.systemLanguage == SystemLanguage.Turkish ? "tr" : "en";
         }
 
         // Tuş atamaları Input System'in kendi JSON biçiminde saklanır. Uygulayan SettingsPanel/Applier.

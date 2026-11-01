@@ -1,3 +1,4 @@
+using Game.Localization;
 using TMPro;
 using UnityEngine;
 
@@ -27,10 +28,10 @@ namespace Game.Chamber
 
             label.text = chamber.State switch
             {
-                ChamberState.Preparing => $"Deneme {attempt + 1}",
-                ChamberState.Running => $"Deneme {attempt}{remaining}{TimeSuffix()}",
-                ChamberState.Dead => $"Öldün: {chamber.LastDeathReason}",
-                ChamberState.Solved => "Oda çözüldü",
+                ChamberState.Preparing => Loc.Format("Deneme {0}", attempt + 1),
+                ChamberState.Running => Loc.Format("Deneme {0}", attempt) + remaining + TimeSuffix(),
+                ChamberState.Dead => Loc.Format("Öldün: {0}", chamber.LastDeathReason),
+                ChamberState.Solved => Loc.T("Oda çözüldü"),
                 _ => string.Empty
             };
         }
@@ -44,7 +45,7 @@ namespace Game.Chamber
 
             return timeControl.IsFastForwarding
                 ? $"   >> ×{timeControl.Speed:0}"
-                : "   " + string.Format(fastForwardHint, timeControl.KeyLabel);
+                : "   " + Loc.Format(fastForwardHint, timeControl.KeyLabel);
         }
     }
 }

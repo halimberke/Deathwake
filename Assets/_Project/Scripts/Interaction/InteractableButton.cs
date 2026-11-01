@@ -1,3 +1,4 @@
+using Game.Localization;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,7 +21,7 @@ namespace Game.Interaction
 
         public string GetPrompt(IInteractor interactor)
         {
-            return CanInteract(interactor) ? prompt : disabledPrompt;
+            return Loc.T(CanInteract(interactor) ? prompt : disabledPrompt);
         }
 
         public bool CanInteract(IInteractor interactor)

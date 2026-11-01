@@ -1,3 +1,4 @@
+using Game.Localization;
 using UnityEngine;
 
 namespace Game.Chamber
@@ -16,11 +17,11 @@ namespace Game.Chamber
         [Tooltip("Süre dolunca ölüm yazısı.")]
         [SerializeField] private string timeoutReason = "Gazdan boğuldun";
 
-        public string TitleCode => titleCode;
-        public string DisplayName => displayName;
+        public string TitleCode => Loc.T(titleCode);
+        public string DisplayName => Loc.T(displayName);
         public float AttemptDuration => attemptDuration;
         public bool HasTimeLimit => attemptDuration > 0f;
         public int MaxEchoes => maxEchoes;
-        public string TimeoutReason => timeoutReason;
+        public string TimeoutReason => Loc.T(timeoutReason);
     }
 }

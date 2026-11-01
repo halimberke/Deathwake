@@ -1,3 +1,4 @@
+using Game.Localization;
 using UnityEngine;
 
 namespace Game.Narrative
@@ -17,8 +18,8 @@ namespace Game.Narrative
         [SerializeField] private string body = "...";
         [SerializeField] private NoteStyle style = NoteStyle.Typed;
 
-        public string Title => title;
-        public string Body => body;
+        public string Title => Loc.T(title);
+        public string Body => Loc.T(body);
         public NoteStyle Style => style;
     }
 }

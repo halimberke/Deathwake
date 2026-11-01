@@ -1,4 +1,5 @@
 using System.Collections;
+using Game.Localization;
 using UnityEngine;
 
 namespace Game.Interaction
@@ -51,13 +52,15 @@ namespace Game.Interaction
             {
                 if (CanUnlockWithHand(interactor))
                 {
-                    return $"{unlockPrompt} ({requiredItem.DisplayName})";
+                    return $"{Loc.T(unlockPrompt)} ({requiredItem.DisplayName})";
                 }
 
-                return requiredItem != null ? $"{lockedPrompt}: {requiredItem.DisplayName} gerekli" : lockedPrompt;
+                return requiredItem != null
+                    ? Loc.Format("{0}: {1} gerekli", Loc.T(lockedPrompt), requiredItem.DisplayName)
+                    : Loc.T(lockedPrompt);
             }
 
-            return isOpen ? closePrompt : openPrompt;
+            return Loc.T(isOpen ? closePrompt : openPrompt);
         }
 
         public bool CanInteract(IInteractor interactor)

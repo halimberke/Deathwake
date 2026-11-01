@@ -1,4 +1,5 @@
 using System;
+using Game.Localization;
 using TMPro;
 using UnityEngine;
 
@@ -27,9 +28,9 @@ namespace Game.UI
 
         public void Ask(string title, string body, string confirmText, UIPanel blockedPanel, Action confirmed)
         {
-            titleLabel.text = title;
-            bodyLabel.text = body;
-            confirmItem.Label.text = confirmText;
+            titleLabel.text = Loc.T(title);
+            bodyLabel.text = Loc.T(body);
+            confirmItem.Label.text = Loc.T(confirmText);
             onConfirm = confirmed;
             blocked = blockedPanel;
             blocked.SetInteractable(false);

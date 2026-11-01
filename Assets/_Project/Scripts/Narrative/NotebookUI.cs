@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Game.Chamber;
 using Game.Flow;
+using Game.Localization;
 using Game.Player;
 using Game.Settings;
 using Game.UI;
@@ -140,7 +141,7 @@ namespace Game.Narrative
             readerPanel.SetActive(true);
             notebookPanel.SetActive(false);
             ApplyPaper(readerPaper, readerTitle, readerBody, note);
-            readerHint.text = string.Format(readerHintFormat,
+            readerHint.text = Loc.Format(readerHintFormat,
                 KeyLabels.Get(interactAction.action), KeyLabels.Get(notebookAction.action));
             readerPaper.rectTransform.localRotation =
                 Quaternion.Euler(0f, 0f, note.Style == NoteStyle.Handwritten ? handwrittenTilt : 0f);
@@ -167,7 +168,7 @@ namespace Game.Narrative
                 ShowPage(notes[notes.Count - 1]);
             }
 
-            notebookHint.text = string.Format(notebookHintFormat, KeyLabels.Get(notebookAction.action));
+            notebookHint.text = Loc.Format(notebookHintFormat, KeyLabels.Get(notebookAction.action));
             readerPanel.SetActive(false);
             notebookPanel.SetActive(true);
             SetOpen(true);
@@ -233,7 +234,7 @@ namespace Game.Narrative
             if (toastPending)
             {
                 toastPending = false;
-                addedToastLabel.text = string.Format(addedToastFormat, KeyLabels.Get(notebookAction.action));
+                addedToastLabel.text = Loc.Format(addedToastFormat, KeyLabels.Get(notebookAction.action));
                 if (toastRoutine != null)
                 {
                     StopCoroutine(toastRoutine);

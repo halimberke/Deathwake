@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Localization;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -18,7 +19,7 @@ namespace Game.Settings
             [Tooltip("Birleşik eylemin parçası (Move için up, down, left, right). Tek tuşlu eylemde boş.")]
             [SerializeField] private string compositePart;
 
-            public string Label => label;
+            public string Label => Loc.T(label);
             public InputAction Action => action != null ? action.action : null;
 
             // Klavye grubundaki ilk uygun bağlantının sırası. Bulunamazsa -1.

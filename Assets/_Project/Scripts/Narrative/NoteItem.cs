@@ -1,4 +1,5 @@
 using Game.Interaction;
+using Game.Localization;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,7 +13,7 @@ namespace Game.Narrative
         [Tooltip("Not her okunduğunda. Senaryo buradan sinyal alabilir.")]
         [SerializeField] private UnityEvent onRead;
 
-        public string GetPrompt(IInteractor interactor) => prompt;
+        public string GetPrompt(IInteractor interactor) => Loc.T(prompt);
 
         public bool CanInteract(IInteractor interactor) => interactor is PlayerInteractor;
 

@@ -1,3 +1,4 @@
+using Game.Localization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,8 +33,8 @@ namespace Game.Interaction
                 bool hasRoom = interactor.Hand.TryGetPlacement(out _, out bool valid) && valid;
                 crosshair.color = hasRoom ? idleColor : blockedColor;
                 promptText.text = hasRoom
-                    ? $"{interactor.KeyLabel}: {dropPrompt} ({interactor.Hand.HeldItem.DisplayName})"
-                    : noRoomPrompt;
+                    ? $"{interactor.KeyLabel}: {Loc.T(dropPrompt)} ({interactor.Hand.HeldItem.DisplayName})"
+                    : Loc.T(noRoomPrompt);
                 return;
             }
 

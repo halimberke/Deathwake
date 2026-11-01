@@ -31,7 +31,6 @@ namespace Game.Settings
         {
             Entry = entry;
             BindingIndex = entry.FindBindingIndex();
-            labelText.text = entry.Label;
             rebindButton.onClick.AddListener(() => onRebind(this));
             rebindButton.onClick.AddListener(UIAudio.Click);
             Refresh();
@@ -40,6 +39,7 @@ namespace Game.Settings
         public void Refresh()
         {
             waiting = false;
+            labelText.text = Entry.Label;
             keyText.color = theme.TextPrimary;
             keyText.text = BindingIndex >= 0
                 ? Action.GetBindingDisplayString(BindingIndex, InputBinding.DisplayStringOptions.DontIncludeInteractions)

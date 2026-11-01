@@ -1,3 +1,4 @@
+using Game.Localization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -63,7 +64,7 @@ namespace Game.Interaction
 
         public string GetPrompt(IInteractor interactor)
         {
-            return $"{prompt} ({DisplayName})";
+            return $"{Loc.T(prompt)} ({DisplayName})";
         }
 
         public bool CanInteract(IInteractor interactor)

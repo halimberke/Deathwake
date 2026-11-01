@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Game.Flow;
+using Game.Localization;
 using UnityEngine;
 
 namespace Game.Narrative
@@ -76,8 +77,9 @@ namespace Game.Narrative
                     Destroy(chime);
                 }
 
-                foreach (string line in announcement.Lines)
+                foreach (string source in announcement.Lines)
                 {
+                    string line = Loc.T(source);
                     SpokenLine spoken = GibberishSynth.Speak(line, voice);
                     subtitles.Show(voice.DisplayName, voice.NameColor, line);
                     yield return PlayClip(spoken.Clip, spoken);

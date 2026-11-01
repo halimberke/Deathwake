@@ -1,3 +1,4 @@
+using Game.Localization;
 using UnityEngine;
 
 namespace Game.Interaction
@@ -14,8 +15,8 @@ namespace Game.Interaction
         public string GetPrompt(IInteractor interactor)
         {
             return CanInteract(interactor)
-                ? $"{prompt} ({interactor.Hand.HeldItem.DisplayName})"
-                : emptyHandPrompt;
+                ? $"{Loc.T(prompt)} ({interactor.Hand.HeldItem.DisplayName})"
+                : Loc.T(emptyHandPrompt);
         }
 
         public bool CanInteract(IInteractor interactor)

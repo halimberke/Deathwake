@@ -1,3 +1,4 @@
+using Game.Localization;
 using Game.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -13,6 +14,7 @@ namespace Game.Settings
         private void Awake()
         {
             GameSettings.Load();
+            Loc.SetLanguage(GameSettings.Language);
             if (!string.IsNullOrEmpty(GameSettings.BindingOverrides))
             {
                 actions.LoadBindingOverridesFromJson(GameSettings.BindingOverrides);
@@ -39,6 +41,7 @@ namespace Game.Settings
         {
             look.SetSensitivity(GameSettings.Sensitivity);
             AudioListener.volume = GameSettings.Volume;
+            Loc.SetLanguage(GameSettings.Language);
 
             // Editor'ün Game penceresi bu ayarları kullanmaz.
             if (Application.isEditor)

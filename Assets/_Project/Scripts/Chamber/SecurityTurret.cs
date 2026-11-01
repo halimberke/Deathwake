@@ -1,4 +1,5 @@
 using Game.Echo;
+using Game.Localization;
 using Game.Player;
 using UnityEngine;
 
@@ -256,7 +257,7 @@ namespace Game.Chamber
             shotEnd = lastSeenPoint;
             if (playerHealth != null)
             {
-                playerHealth.TakeDamage(damagePerShot, deathReason);
+                playerHealth.TakeDamage(damagePerShot, Loc.T(deathReason));
             }
         }
 

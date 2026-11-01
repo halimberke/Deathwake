@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Localization;
 using Game.UI;
 using TMPro;
 using UnityEngine;
@@ -25,6 +26,9 @@ namespace Game.Settings
         [SerializeField] private TMP_Text sensitivityValue;
         [SerializeField] private Slider volumeSlider;
         [SerializeField] private TMP_Text volumeValue;
+        [SerializeField] private Button languagePrevious;
+        [SerializeField] private Button languageNext;
+        [SerializeField] private TMP_Text languageValue;
 
         [Header("Görüntü")]
         [SerializeField] private ToggleSwitch fullscreenToggle;
@@ -84,6 +88,11 @@ namespace Game.Settings
             resolutionNext.onClick.AddListener(() => StepResolution(1));
             resolutionPrevious.onClick.AddListener(UIAudio.Click);
             resolutionNext.onClick.AddListener(UIAudio.Click);
+            languagePrevious.onClick.AddListener(() => StepLanguage(-1));
+            languageNext.onClick.AddListener(() => StepLanguage(1));
+            languagePrevious.onClick.AddListener(UIAudio.Click);
+            languageNext.onClick.AddListener(UIAudio.Click);
+            Loc.Changed += HandleLanguageChanged;
             resetBindingsButton.onClick.AddListener(ResetBindings);
             resetBindingsButton.onClick.AddListener(UIAudio.Click);
             backItem.Button.onClick.AddListener(Close);
@@ -94,6 +103,7 @@ namespace Game.Settings
 
         private void OnDestroy()
         {
+            Loc.Changed -= HandleLanguageChanged;
             CancelRebinding();
         }
 
@@ -104,7 +114,7 @@ namespace Game.Settings
             sensitivitySlider.SetValueWithoutNotify(GameSettings.Sensitivity);
             volumeSlider.SetValueWithoutNotify(GameSettings.Volume);
             fullscreenToggle.SetValueWithoutNotify(GameSettings.Fullscreen);
-            bindingHint.text = defaultHint;
+            bindingHint.text = Loc.T(defaultHint);
             RefreshValues();
             RefreshRows();
         }
@@ -138,11 +148,32 @@ namespace Game.Settings
         private void RefreshValues()
         {
             sensitivityValue.text = $"{GameSettings.Sensitivity / GameSettings.DefaultSensitivity:0.0}x";
-            volumeValue.text = $"%{Mathf.RoundToInt(GameSettings.Volume * 100f)}";
-            fullscreenValue.text = GameSettings.Fullscreen ? "Açık" : "Kapalı";
+            volumeValue.text = Loc.Format("%{0}", Mathf.RoundToInt(GameSettings.Volume * 100f));
+            languageValue.text = Loc.NameOf(Loc.Current);
+            fullscreenValue.text = Loc.T(GameSettings.Fullscreen ? "Açık" : "Kapalı");
             resolutionValue.text = resolutions.Count > 0
                 ? $"{resolutions[resolutionIndex].x} × {resolutions[resolutionIndex].y}"
                 : "-";
+        }
+
+        private void StepLanguage(int step)
+        {
+            IReadOnlyList<string> languages = Loc.Languages;
+            int index = 0;
+            while (index < languages.Count && languages[index] != Loc.Current)
+            {
+                index++;
+            }
+
+            GameSettings.SetLanguage(languages[(index + step + languages.Count) % languages.Count]);
+        }
+
+        // Sabit yazılar LocalizedText ile kendini yeniler; burada koddan yazılanlar kalır.
+        private void HandleLanguageChanged()
+        {
+            bindingHint.text = Loc.T(defaultHint);
+            RefreshValues();
+            RefreshRows();
         }
 
         private void HandleFullscreenChanged(bool value)
@@ -242,8 +273,8 @@ namespace Game.Settings
             // Atama sırasında eylem kapalı olmalı; arayüz de basılan tuşla gezinmemeli.
             action.Disable();
             UIFocus.SetNavigation(false);
-            row.ShowWaiting(waitingText);
-            bindingHint.text = cancelHint;
+            row.ShowWaiting(Loc.T(waitingText));
+            bindingHint.text = Loc.T(cancelHint);
 
             rebinding = action.PerformInteractiveRebinding(row.BindingIndex)
                 .WithControlsExcluding("<Mouse>/position")
@@ -271,7 +302,7 @@ namespace Game.Settings
                 row.Action.Enable();
             }
 
-            bindingHint.text = defaultHint;
+            bindingHint.text = Loc.T(defaultHint);
             if (completed)
             {
                 string newPath = row.Action.bindings[row.BindingIndex].effectivePath;
@@ -280,7 +311,7 @@ namespace Game.Settings
                 {
                     // Aynı tuş iki eyleme bağlı kalmasın: diğer eylem bu eylemin eski tuşunu alır.
                     other.Action.ApplyBindingOverride(other.BindingIndex, oldPath);
-                    bindingHint.text = string.Format(swappedHint, other.Entry.Label);
+                    bindingHint.text = Loc.Format(swappedHint, other.Entry.Label);
                 }
 
                 SaveBindings();
@@ -309,7 +340,7 @@ namespace Game.Settings
             actions.RemoveAllBindingOverrides();
             SaveBindings();
             RefreshRows();
-            bindingHint.text = defaultHint;
+            bindingHint.text = Loc.T(defaultHint);
         }
 
         private void SaveBindings()

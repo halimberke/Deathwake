@@ -2821,7 +2821,7 @@ MonoBehaviour:
   openPrompt: "A\xE7"
   closePrompt: Kapat
   unlockPrompt: "Kilidi a\xE7"
-  lockedPrompt: "Kapal\u0131"
+  lockedPrompt: Kilitli
 --- !u!4 &1787209435
 Transform:
   m_ObjectHideFlags: 0

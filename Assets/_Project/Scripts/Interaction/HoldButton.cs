@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Localization;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -42,7 +43,7 @@ namespace Game.Interaction
         // IInteractable: ekrandaki yazı için. Asıl iş IHoldable üzerinden yürür.
         public string GetPrompt(IInteractor interactor)
         {
-            return holders.Contains(interactor) ? heldPrompt : prompt;
+            return Loc.T(holders.Contains(interactor) ? heldPrompt : prompt);
         }
 
         public bool CanInteract(IInteractor interactor)

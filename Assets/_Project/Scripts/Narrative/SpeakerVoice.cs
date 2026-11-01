@@ -1,3 +1,4 @@
+using Game.Localization;
 using UnityEngine;
 
 namespace Game.Narrative
@@ -30,7 +31,7 @@ namespace Game.Narrative
         [Tooltip("Anonstan önce iki tonlu zil çalsın mı.")]
         [SerializeField] private bool chime = true;
 
-        public string DisplayName => displayName;
+        public string DisplayName => Loc.T(displayName);
         public Color NameColor => nameColor;
         public float BasePitch => basePitch;
         public float PitchVariance => pitchVariance;

@@ -1,3 +1,4 @@
+using Game.Localization;
 using UnityEngine;
 
 namespace Game.Interaction
@@ -12,7 +13,7 @@ namespace Game.Interaction
         [Range(0.1f, 1f)]
         [SerializeField] private float carrySpeedMultiplier = 1f;
 
-        public string DisplayName => displayName;
+        public string DisplayName => Loc.T(displayName);
         public float CarrySpeedMultiplier => carrySpeedMultiplier;
     }
 }

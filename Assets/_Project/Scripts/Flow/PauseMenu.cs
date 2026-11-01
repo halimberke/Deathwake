@@ -1,4 +1,5 @@
 using Game.Chamber;
+using Game.Localization;
 using Game.Narrative;
 using Game.Player;
 using Game.Settings;
@@ -128,8 +129,8 @@ namespace Game.Flow
             ChamberController chamber = ActiveChamber.Current;
             roomLabel.text = chamber == null
                 ? string.Empty
-                : string.Format(roomFormat, chamber.Definition.TitleCode,
-                    chamber.Definition.DisplayName.ToUpperInvariant(), chamber.Progress.AttemptCount);
+                : Loc.Format(roomFormat, chamber.Definition.TitleCode,
+                    Loc.Upper(chamber.Definition.DisplayName), chamber.Progress.AttemptCount);
         }
 
         private void SetGameHudVisible(bool visible)
@@ -150,6 +151,7 @@ namespace Game.Flow
         {
             if (GamePause.IsPaused && !MainMenu.IsOpen)
             {
+                RefreshRoomLabel();
                 panel.Show(settingsItem.Button);
             }
         }
