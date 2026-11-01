@@ -7,8 +7,12 @@ namespace Game.Interaction
     // Bırakma "önizlemeli yerleştirme"dir: eşya nişan alınan yüzeye, önizlemede görülen pozla konur.
     public class HandSlot : MonoBehaviour
     {
-        [Tooltip("Eşyanın elde durduğu nokta. Kameranın alt nesnesi olmalı.")]
+        [Tooltip("Eşyanın elde durduğu nokta. Oyuncuda kameranın, yankıda gövdenin alt nesnesi.")]
         [SerializeField] private Transform holdPoint;
+        [Tooltip("Açıksa eşya gerçek boyutunda taşınır (yankı). Kapalıysa eşyanın elde boyut çarpanı geçerlidir (oyuncu).")]
+        [SerializeField] private bool carryAtFullSize;
+        [Tooltip("Gerçek boyutta taşırken eşyanın gövdeye bakan yüzü ile tutma noktası arasındaki pay.")]
+        [SerializeField] private float carryClearance = 0.15f;
         [Tooltip("Nişan alınan yön (göz). Genelde ana kamera.")]
         [SerializeField] private Transform dropOrigin;
 
@@ -48,7 +52,13 @@ namespace Game.Interaction
 
         public void Hold(Pickup item)
         {
-            item.AttachTo(holdPoint);
+            item.AttachTo(holdPoint, carryAtFullSize);
+            if (carryAtFullSize)
+            {
+                // Büyük eşya gövdenin içine girmesin: yarı derinliği kadar öne alınır.
+                item.transform.localPosition = Vector3.forward * Mathf.Max(item.Extents.z - carryClearance, 0f);
+            }
+
             SetHeld(item);
         }
 

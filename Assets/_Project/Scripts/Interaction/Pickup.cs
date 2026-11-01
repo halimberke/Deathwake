@@ -79,7 +79,8 @@ namespace Game.Interaction
         }
 
         // HandSlot tarafından çağrılır.
-        public void AttachTo(Transform holdPoint)
+        // fullSize: eşya gerçek boyutunda kalır (yankı). Oyuncuda heldScale ekranı kapatmamak içindir.
+        public void AttachTo(Transform holdPoint, bool fullSize = false)
         {
             IsHeld = true;
             body.isKinematic = true;
@@ -91,7 +92,7 @@ namespace Game.Interaction
             transform.SetParent(holdPoint, false);
             transform.localPosition = Vector3.zero;
             transform.localRotation = Quaternion.identity;
-            transform.localScale = originalScale * heldScale;
+            transform.localScale = fullSize ? originalScale : originalScale * heldScale;
         }
 
         // HandSlot ya da geçiş kutusu tarafından çağrılır.

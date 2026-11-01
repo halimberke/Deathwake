@@ -24,6 +24,8 @@ namespace Game.Echo
         [SerializeField] private MeshFilter bodyMesh;
         [Tooltip("Adım pozları. Yürüdükçe sırayla değişir: yumuşak geçiş yok, PS1 tarzı kesik yürüyüş.")]
         [SerializeField] private Mesh[] stepPoses;
+        [Tooltip("Elinde eşya varken kullanılan adım pozları: kollar önde.")]
+        [SerializeField] private Mesh[] carryPoses;
         [Tooltip("Bir poz kaç metre yürüyüşte değişir. Yankı durunca poz da durur.")]
         [SerializeField] private float stepLength = 0.7f;
 
@@ -115,9 +117,10 @@ namespace Game.Echo
             walked += moved.magnitude;
             lastPosition = transform.position;
 
-            if (stepPoses.Length > 0)
+            Mesh[] poses = actor.Hand.HeldItem != null ? carryPoses : stepPoses;
+            if (poses.Length > 0)
             {
-                bodyMesh.sharedMesh = stepPoses[Mathf.FloorToInt(walked / stepLength) % stepPoses.Length];
+                bodyMesh.sharedMesh = poses[Mathf.FloorToInt(walked / stepLength) % poses.Length];
             }
         }
     }

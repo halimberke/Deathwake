@@ -35,6 +35,7 @@ Transform:
   - {fileID: 5911438889956271353}
   - {fileID: 8450972640279204208}
   - {fileID: 7029297005343478858}
+  - {fileID: 8630364208272020605}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3811350319454963699
@@ -50,6 +51,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Interaction.HandSlot
   holdPoint: {fileID: 8630364208272020605}
+  carryAtFullSize: 1
+  carryClearance: 0.15
   dropOrigin: {fileID: 8450972640279204208}
   placeRange: 3
   yawSnap: 15
@@ -104,6 +107,9 @@ MonoBehaviour:
   stepPoses:
   - {fileID: 1341418538462778276, guid: ab9532c0d18e0bc438c7e24c117bc96d, type: 3}
   - {fileID: 8238166662282340317, guid: ffcb2b7acd61af24da5bbd371bc09404, type: 3}
+  carryPoses:
+  - {fileID: -1339020994829057167, guid: 461a41c8bd6e72d4e992bccadf55485c, type: 3}
+  - {fileID: -4379873875585881155, guid: da3afa15f01202e4e9fec928eb487c07, type: 3}
   stepLength: 0.7
 --- !u!1 &809168617406411124
 GameObject:
@@ -373,7 +379,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6837144518786291850}
-  - {fileID: 8630364208272020605}
   m_Father: {fileID: 4897972099685503655}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7589675248083553851
@@ -401,11 +406,11 @@ Transform:
   m_GameObject: {fileID: 7589675248083553851}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.35, y: -0.3, z: 0.6}
+  m_LocalPosition: {x: 0, y: 1.12, z: 0.47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8450972640279204208}
+  m_Father: {fileID: 4897972099685503655}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8096580338378699701
 GameObject:

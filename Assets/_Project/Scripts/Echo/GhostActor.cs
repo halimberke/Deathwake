@@ -10,7 +10,7 @@ namespace Game.Echo
     // kapı, düğme, eşya onu oyuncudan ayırt etmez.
     public class GhostActor : MonoBehaviour, IInteractor
     {
-        [Tooltip("Yukarı-aşağı bakış buna uygulanır. HandSlot'un tutma noktası bunun altında olmalı.")]
+        [Tooltip("Yukarı-aşağı bakış buna uygulanır.")]
         [SerializeField] private Transform cameraPivot;
         [SerializeField] private HandSlot hand;
         [SerializeField] private bool logSkippedSteps = true;
