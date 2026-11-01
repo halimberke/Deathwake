@@ -3779,6 +3779,7 @@ MonoBehaviour:
   loop: 0
   spatial: 1
   volume: 1
+  minDistance: 1.5
   playOnStart: 0
   ignoreListenerPause: 0
 --- !u!1 &411725081
@@ -4156,6 +4157,7 @@ MonoBehaviour:
   loop: 0
   spatial: 1
   volume: 0.6
+  minDistance: 1.5
   playOnStart: 0
   ignoreListenerPause: 0
 --- !u!82 &435727902
@@ -4776,7 +4778,8 @@ MonoBehaviour:
   type: 0
   loop: 1
   spatial: 1
-  volume: 0.7
+  volume: 1
+  minDistance: 5
   playOnStart: 0
   ignoreListenerPause: 0
 --- !u!1 &497381984
@@ -6785,7 +6788,8 @@ MonoBehaviour:
   type: 11
   loop: 1
   spatial: 0
-  volume: 0.3
+  volume: 0.09
+  minDistance: 1.5
   playOnStart: 1
   ignoreListenerPause: 0
 --- !u!82 &707503517
@@ -7583,6 +7587,7 @@ MonoBehaviour:
     delay: 0
     zone: {fileID: 0}
     signalKey: 
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -7627,6 +7632,7 @@ MonoBehaviour:
     delay: 1.5
     zone: {fileID: 0}
     signalKey: 
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -7659,6 +7665,7 @@ MonoBehaviour:
     delay: 3.7
     zone: {fileID: 0}
     signalKey: 
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -7691,6 +7698,7 @@ MonoBehaviour:
     delay: 2.5
     zone: {fileID: 0}
     signalKey: su
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -7723,6 +7731,7 @@ MonoBehaviour:
     delay: 0
     zone: {fileID: 0}
     signalKey: telefon
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -7752,9 +7761,10 @@ MonoBehaviour:
           m_CallState: 2
   - label: "Yatma iste\u011Fi"
     wait: 0
-    delay: 9
+    delay: 7
     zone: {fileID: 0}
     signalKey: 
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -7775,6 +7785,7 @@ MonoBehaviour:
     delay: 0.4
     zone: {fileID: 233920559}
     signalKey: 
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -7807,14 +7818,16 @@ MonoBehaviour:
     delay: 0.9
     zone: {fileID: 0}
     signalKey: 
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls: []
   - label: "F\u0131rt\u0131na yorumu"
     wait: 0
-    delay: 1
+    delay: 0.6
     zone: {fileID: 0}
     signalKey: 
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -7832,9 +7845,10 @@ MonoBehaviour:
           m_CallState: 2
   - label: "Yatak odas\u0131"
     wait: 1
-    delay: 0.5
+    delay: 0.2
     zone: {fileID: 290190080}
     signalKey: 
+    skipIfSignal: not
     action:
       m_PersistentCalls:
         m_Calls:
@@ -7855,6 +7869,7 @@ MonoBehaviour:
     delay: 2
     zone: {fileID: 0}
     signalKey: not
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -7899,6 +7914,7 @@ MonoBehaviour:
     delay: 0
     zone: {fileID: 0}
     signalKey: "kap\u0131"
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -7931,6 +7947,7 @@ MonoBehaviour:
     delay: 2.2
     zone: {fileID: 0}
     signalKey: 
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -8035,6 +8052,7 @@ MonoBehaviour:
     delay: 0.7
     zone: {fileID: 0}
     signalKey: 
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -8079,6 +8097,7 @@ MonoBehaviour:
     delay: 1.3
     zone: {fileID: 0}
     signalKey: 
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -8099,6 +8118,7 @@ MonoBehaviour:
     delay: 3
     zone: {fileID: 0}
     signalKey: 
+    skipIfSignal: 
     action:
       m_PersistentCalls:
         m_Calls:
@@ -11145,8 +11165,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1301363921}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.4, y: 0, z: 6.475}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
+  m_LocalPosition: {x: 7.4, y: 0, z: 6.475}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11166,7 +11186,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Interaction.Door
   hinge: {fileID: 0}
-  openAngle: -95
+  openAngle: 95
   rotateSpeed: 130
   startOpen: 0
   isLocked: 0
@@ -11744,7 +11764,8 @@ MonoBehaviour:
   type: 1
   loop: 0
   spatial: 1
-  volume: 0.9
+  volume: 1
+  minDistance: 6
   playOnStart: 0
   ignoreListenerPause: 0
 --- !u!1 &1373921137
@@ -12357,7 +12378,8 @@ MonoBehaviour:
   type: 2
   loop: 1
   spatial: 1
-  volume: 0.045
+  volume: 0.015
+  minDistance: 1.5
   playOnStart: 0
   ignoreListenerPause: 0
 --- !u!1001 &1452016164
@@ -13137,6 +13159,7 @@ MonoBehaviour:
   loop: 0
   spatial: 0
   volume: 0.55
+  minDistance: 1.5
   playOnStart: 0
   ignoreListenerPause: 0
 --- !u!82 &1521084499
@@ -13549,6 +13572,7 @@ MonoBehaviour:
   loop: 1
   spatial: 0
   volume: 0.7
+  minDistance: 1.5
   playOnStart: 0
   ignoreListenerPause: 0
 --- !u!82 &1599236086
@@ -13966,6 +13990,7 @@ MonoBehaviour:
   loop: 1
   spatial: 1
   volume: 0.45
+  minDistance: 1.5
   playOnStart: 0
   ignoreListenerPause: 0
 --- !u!82 &1615988791
@@ -15807,6 +15832,7 @@ MonoBehaviour:
   loop: 0
   spatial: 0
   volume: 0.6
+  minDistance: 1.5
   playOnStart: 0
   ignoreListenerPause: 0
 --- !u!82 &1988052283

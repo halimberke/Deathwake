@@ -13,6 +13,8 @@ namespace Game.Audio
         [SerializeField] private bool spatial = true;
         [Range(0f, 1f)]
         [SerializeField] private float volume = 0.8f;
+        [Tooltip("Konumlu seste, bu mesafeye kadar ses kısılmaz. Evin her yerinden duyulması gereken sesler için büyütülür.")]
+        [SerializeField] private float minDistance = 1.5f;
         [SerializeField] private bool playOnStart;
         [Tooltip("Oyun duraklatılınca susmasın (arayüz sesleri).")]
         [SerializeField] private bool ignoreListenerPause;
@@ -41,7 +43,7 @@ namespace Game.Audio
             source.playOnAwake = false;
             source.ignoreListenerPause = ignoreListenerPause;
             source.spatialBlend = spatial ? 1f : 0f;
-            source.minDistance = 1.5f;
+            source.minDistance = minDistance;
             source.maxDistance = 15f;
         }
 

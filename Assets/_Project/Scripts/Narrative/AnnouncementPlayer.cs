@@ -86,7 +86,7 @@ namespace Game.Narrative
                     yield return WaitUnpaused(announcement.LinePause);
                 }
 
-                yield return WaitUnpaused(lingerDuration);
+                yield return Linger();
                 if (queue.Count == 0)
                 {
                     subtitles.Hide();
@@ -94,6 +94,21 @@ namespace Game.Narrative
             }
 
             playing = null;
+        }
+
+        // Sırada bekleyen anons varsa altyazı boşuna ekranda kalmaz.
+        private IEnumerator Linger()
+        {
+            float elapsed = 0f;
+            while (elapsed < lingerDuration && queue.Count == 0)
+            {
+                if (!GamePause.IsPaused)
+                {
+                    elapsed += Time.unscaledDeltaTime;
+                }
+
+                yield return null;
+            }
         }
 
         private IEnumerator PlayClip(AudioClip clip, SpokenLine spoken)

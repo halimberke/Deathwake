@@ -14,6 +14,7 @@ namespace Game.Chamber
         public bool IsRunning { get; private set; }
         public float Remaining => Mathf.Max(0f, Duration - Time);
 
+        // duration 0: saat sayar (kayıt ve yankı buna bağlı) ama hiç dolmaz.
         public void StartClock(float duration)
         {
             Duration = duration;
@@ -35,7 +36,7 @@ namespace Game.Chamber
 
             Time += UnityEngine.Time.deltaTime;
 
-            if (Time >= Duration)
+            if (Duration > 0f && Time >= Duration)
             {
                 Time = Duration;
                 IsRunning = false;

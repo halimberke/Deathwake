@@ -9,7 +9,7 @@ namespace Game.Chamber
         [Tooltip("Başlık kartının üst satırı. Örnek: DENEY 01")]
         [SerializeField] private string titleCode = "DENEY 00";
         [SerializeField] private string displayName = "Oda";
-        [Tooltip("Bir denemenin süresi (saniye). Süre dolunca oda öldürür.")]
+        [Tooltip("Bir denemenin süresi (saniye). Süre dolunca oda öldürür. 0 = süre yok, oda başka yolla öldürür.")]
         [SerializeField] private float attemptDuration = 45f;
         [Tooltip("Aynı anda en fazla kaç yankı olabilir. Aşılınca en eskisi silinir.")]
         [SerializeField] private int maxEchoes = 1;
@@ -19,6 +19,7 @@ namespace Game.Chamber
         public string TitleCode => titleCode;
         public string DisplayName => displayName;
         public float AttemptDuration => attemptDuration;
+        public bool HasTimeLimit => attemptDuration > 0f;
         public int MaxEchoes => maxEchoes;
         public string TimeoutReason => timeoutReason;
     }

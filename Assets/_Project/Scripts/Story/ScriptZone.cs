@@ -12,6 +12,9 @@ namespace Game.Story
 
         public bool PlayerInside { get; private set; }
 
+        // Oyuncu en az bir kez girdi mi? Hızlı oynayan oyuncu alandan senaryodan önce geçebilir.
+        public bool PlayerEntered { get; private set; }
+
         private void Reset()
         {
             GetComponent<Collider>().isTrigger = true;
@@ -22,6 +25,7 @@ namespace Game.Story
             if (other.CompareTag(playerTag))
             {
                 PlayerInside = true;
+                PlayerEntered = true;
                 onPlayerEnter.Invoke();
             }
         }

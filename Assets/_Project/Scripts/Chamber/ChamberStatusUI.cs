@@ -23,12 +23,12 @@ namespace Game.Chamber
             }
 
             int attempt = chamber.Progress.AttemptCount;
-            float remaining = chamber.Clock.Remaining;
+            string remaining = chamber.Definition.HasTimeLimit ? $"   {chamber.Clock.Remaining:0.0}" : string.Empty;
 
             label.text = chamber.State switch
             {
                 ChamberState.Preparing => $"Deneme {attempt + 1}",
-                ChamberState.Running => $"Deneme {attempt}   {remaining:0.0}{TimeSuffix()}",
+                ChamberState.Running => $"Deneme {attempt}{remaining}{TimeSuffix()}",
                 ChamberState.Dead => $"Öldün: {chamber.LastDeathReason}",
                 ChamberState.Solved => "Oda çözüldü",
                 _ => string.Empty

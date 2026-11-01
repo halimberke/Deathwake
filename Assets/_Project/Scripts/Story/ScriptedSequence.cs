@@ -14,7 +14,7 @@ namespace Game.Story
         public enum WaitType
         {
             Delay,        // Sadece bekle
-            PlayerInZone, // Oyuncu alana girene kadar bekle
+            PlayerInZone, // Oyuncu alana girene kadar bekle (daha önce girdiyse beklemez)
             Signal        // Signal("anahtar") çağrılana kadar bekle (örnek: telefon açıldı)
         }
 
@@ -29,6 +29,8 @@ namespace Game.Story
             [SerializeField] private ScriptZone zone;
             [Tooltip("Sadece Signal için. Bu adım bu anahtarla gelen sinyali bekler.")]
             [SerializeField] private string signalKey;
+            [Tooltip("Bu sinyal geldiyse adımın olayları çalışmaz. Örnek: not okunduysa \"masada kâğıt var\" denmez.")]
+            [SerializeField] private string skipIfSignal;
             [SerializeField] private UnityEvent action;
 
             public string Label => label;
@@ -36,6 +38,7 @@ namespace Game.Story
             public float Delay => delay;
             public ScriptZone Zone => zone;
             public string SignalKey => signalKey;
+            public string SkipIfSignal => skipIfSignal;
             public UnityEvent Action => action;
         }
 
@@ -80,7 +83,7 @@ namespace Game.Story
                 switch (step.Wait)
                 {
                     case WaitType.PlayerInZone:
-                        yield return new WaitUntil(() => step.Zone != null && step.Zone.PlayerInside);
+                        yield return new WaitUntil(() => step.Zone != null && step.Zone.PlayerEntered);
                         break;
                     case WaitType.Signal:
                         yield return new WaitUntil(() => signals.Contains(step.SignalKey));
@@ -93,7 +96,10 @@ namespace Game.Story
                     yield return new WaitForSeconds(step.Delay);
                 }
 
-                step.Action.Invoke();
+                if (string.IsNullOrEmpty(step.SkipIfSignal) || !signals.Contains(step.SkipIfSignal))
+                {
+                    step.Action.Invoke();
+                }
             }
 
             running = null;

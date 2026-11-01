@@ -2739,7 +2739,7 @@ MonoBehaviour:
   chamber: {fileID: 3275590422471506286}
   entries:
   - label: "Kepenk kapan\u0131r"
-    time: 10
+    time: 14
     action:
       m_PersistentCalls:
         m_Calls:

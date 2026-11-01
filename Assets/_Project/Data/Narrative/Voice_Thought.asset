@@ -16,7 +16,7 @@ MonoBehaviour:
   nameColor: {r: 0.85, g: 0.8, b: 0.55, a: 1}
   basePitch: 130
   pitchVariance: 3
-  syllableDuration: 0.11
+  syllableDuration: 0.075
   formantShift: 1
   seed: 7
   volume: 0
