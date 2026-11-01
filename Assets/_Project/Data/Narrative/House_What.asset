@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.AnnouncementDefinition
   speaker: {fileID: 11400000, guid: 5cc54852e29db06488513bd6d5e73b08, type: 2}
   lines:
-  - "...Orada biri mi vard\u0131?"
+  - "...F\u0131rt\u0131na yakla\u015F\u0131yor."
   playOnce: 1
   linePause: 0.4

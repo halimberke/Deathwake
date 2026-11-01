@@ -19,6 +19,8 @@ Shader "Retro/Lit"
         [Header(Alt bant)]
         _BandMap ("Alt bant dokusu", 2D) = "white" {}
         _BandHeight ("Bant yüksekliği (dünya y, 0 = kapalı)", Float) = 0
+        [Header(Isik)]
+        [Toggle] _PixelLights ("Ek ışıklar piksel başına (büyük zemin ve duvarlar için)", Float) = 0
     }
 
     SubShader
@@ -53,6 +55,7 @@ Shader "Retro/Lit"
                 float _WorldUV;
                 float _WorldTiling;
                 float _BandHeight;
+                float _PixelLights;
             CBUFFER_END
 
             struct Attributes
@@ -69,7 +72,8 @@ Shader "Retro/Lit"
                 float3 affineUV : TEXCOORD1;    // xy = uv * w, z = w (düzeltmesiz koordinat için)
                 half3 lighting : TEXCOORD2;     // Köşede hesaplanan ışık
                 half fogFactor : TEXCOORD3;
-                float worldY : TEXCOORD4;
+                float3 positionWS : TEXCOORD4;
+                float3 normalWS : TEXCOORD5;
             };
 
             // Half-Lambert: dot'u -1..1 yerine 0..1'e taşıyıp kare alır (Valve, Half-Life).
@@ -79,6 +83,19 @@ Shader "Retro/Lit"
                 return wrap * wrap;
             }
 
+            half3 AdditionalLighting(float3 positionWS, float3 normalWS)
+            {
+                half3 light = 0;
+                uint additionalCount = GetAdditionalLightsCount();
+                for (uint i = 0u; i < additionalCount; ++i)
+                {
+                    Light extra = GetAdditionalLight(i, positionWS);
+                    light += extra.color * extra.distanceAttenuation * WrapDiffuse(normalWS, extra.direction);
+                }
+
+                return light;
+            }
+
             Varyings vert(Attributes input)
             {
                 Varyings output;
@@ -86,9 +103,13 @@ Shader "Retro/Lit"
                 float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
                 float4 positionCS = TransformWorldToHClip(positionWS);
 
-                // Köşe titremesi: ekran uzayında ızgaraya yuvarla.
-                float2 grid = max(_SnapResolution.xy * 0.5, 1.0);
-                positionCS.xy = round(positionCS.xy / positionCS.w * grid) / grid * positionCS.w;
+                // Köşe titremesi: ekran uzayında ızgaraya yuvarla. 0 = kapalı (üst üste binen ince katmanlı yüzeyler).
+                if (_SnapResolution.x > 0.0)
+                {
+                    float2 grid = _SnapResolution.xy * 0.5;
+                    positionCS.xy = round(positionCS.xy / positionCS.w * grid) / grid * positionCS.w;
+                }
+
                 output.positionCS = positionCS;
 
                 float2 uv = TRANSFORM_TEX(input.uv, _BaseMap);
@@ -109,18 +130,18 @@ Shader "Retro/Lit"
                 Light mainLight = GetMainLight();
                 half3 light = mainLight.color * WrapDiffuse(normalWS, mainLight.direction);
 
-                uint additionalCount = GetAdditionalLightsCount();
-                for (uint i = 0u; i < additionalCount; ++i)
+                // Büyük yüzeylerde köşe az olduğu için ek ışıklar parçada (frag) hesaplanır.
+                if (_PixelLights < 0.5)
                 {
-                    Light extra = GetAdditionalLight(i, positionWS);
-                    light += extra.color * extra.distanceAttenuation * WrapDiffuse(normalWS, extra.direction);
+                    light += AdditionalLighting(positionWS, normalWS);
                 }
 
                 light += SampleSH(normalWS); // Ortam ışığı
                 output.lighting = light;
 
                 output.fogFactor = ComputeFogFactor(positionCS.z);
-                output.worldY = positionWS.y;
+                output.positionWS = positionWS;
+                output.normalWS = normalWS;
                 return output;
             }
 
@@ -130,11 +151,17 @@ Shader "Retro/Lit"
                 float2 uv = lerp(input.uv, affine, _AffineAmount);
 
                 // Alt bant ayrı kutu değil, aynı yüzeyin dokusu: üst üste binen iki yüzey titreşirdi.
-                half4 albedo = input.worldY < _BandHeight
+                half4 albedo = input.positionWS.y < _BandHeight
                     ? SAMPLE_TEXTURE2D(_BandMap, sampler_BandMap, uv)
                     : SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv);
                 albedo *= _BaseColor;
-                half3 color = albedo.rgb * input.lighting + _Emission.rgb;
+                half3 lighting = input.lighting;
+                if (_PixelLights > 0.5)
+                {
+                    lighting += AdditionalLighting(input.positionWS, normalize(input.normalWS));
+                }
+
+                half3 color = albedo.rgb * lighting + _Emission.rgb;
                 color = MixFog(color, input.fogFactor);
                 return half4(color, 1.0);
             }
@@ -163,13 +190,18 @@ Shader "Retro/Lit"
                 float _WorldUV;
                 float _WorldTiling;
                 float _BandHeight;
+                float _PixelLights;
             CBUFFER_END
 
             float4 vert(float4 positionOS : POSITION) : SV_POSITION
             {
                 float4 positionCS = TransformObjectToHClip(positionOS.xyz);
-                float2 grid = max(_SnapResolution.xy * 0.5, 1.0);
-                positionCS.xy = round(positionCS.xy / positionCS.w * grid) / grid * positionCS.w;
+                if (_SnapResolution.x > 0.0)
+                {
+                    float2 grid = _SnapResolution.xy * 0.5;
+                    positionCS.xy = round(positionCS.xy / positionCS.w * grid) / grid * positionCS.w;
+                }
+
                 return positionCS;
             }
 

@@ -22653,6 +22653,8 @@ MonoBehaviour:
   fogEnd: 30
   ambientColor: {r: 0.35, g: 0.36, b: 0.4, a: 1}
   sun: {fileID: 1231954997}
+  gasFogStart: 0.3
+  gasFogEnd: 4
 --- !u!114 &5943563419597581560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22667,7 +22669,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Visual.RetroScreen
   worldCamera: {fileID: 6458963074750426142}
   screenImage: {fileID: 1551267597}
-  verticalResolution: 480
+  verticalResolution: 300
   retroEnabled: 1
   toggleKey: 94
 --- !u!114 &5943563419597581561

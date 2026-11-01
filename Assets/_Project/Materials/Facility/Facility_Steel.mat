@@ -36,11 +36,12 @@ Material:
     m_Floats:
     - _AffineAmount: 0
     - _BandHeight: 0
+    - _PixelLights: 0
     - _WorldTiling: 0.5
     - _WorldUV: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Emission: {r: 0, g: 0, b: 0, a: 1}
-    - _SnapResolution: {r: 3840, g: 2160, b: 0, a: 0}
+    - _SnapResolution: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

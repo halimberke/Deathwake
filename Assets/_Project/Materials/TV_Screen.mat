@@ -23,16 +23,24 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _BaseMap:
+    - _BandMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: f671e1b3e0074674899c765776dcf081, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AffineAmount: 0.6
+    - _AffineAmount: 0
+    - _BandHeight: 0
+    - _PixelLights: 0
+    - _WorldTiling: 0.5
+    - _WorldUV: 0
     m_Colors:
-    - _BaseColor: {r: 0.6, g: 0.65, b: 0.7, a: 1}
-    - _Emission: {r: 0.45, g: 0.5, b: 0.55, a: 1}
-    - _SnapResolution: {r: 480, g: 270, b: 0, a: 0}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Emission: {r: 0.34, g: 0.37, b: 0.42, a: 1}
+    - _SnapResolution: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

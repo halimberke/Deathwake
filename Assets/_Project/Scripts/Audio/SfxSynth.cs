@@ -14,7 +14,12 @@ namespace Game.Audio
         UiHover,    // Arayüz: seçim değişti (çok kısa, ince)
         UiClick,    // Arayüz: onay (iki tonlu)
         Drone,      // Ana menü: alçak tesis uğultusu (döngü)
-        GasHiss     // Gaz nozulları: basınçlı tıslama (döngü)
+        GasHiss,    // Gaz nozulları: basınçlı tıslama (döngü)
+        Rain,       // Pencerede yağmur (döngü)
+        Thunder,    // Uzaktan gök gürültüsü
+        WaterRun,   // Musluktan akan su (döngü)
+        Gulp,       // Yutkunma
+        Click       // Lamba düğmesi
     }
 
     // Geçici efekt sesleri kodla üretilir. Ses adımında gerçek kayıtlarla değiştirilebilir.
@@ -38,6 +43,11 @@ namespace Game.Audio
                 SfxType.UiClick => UiClick(),
                 SfxType.Drone => Drone(),
                 SfxType.GasHiss => GasHiss(),
+                SfxType.Rain => Rain(),
+                SfxType.Thunder => Thunder(),
+                SfxType.WaterRun => WaterRun(),
+                SfxType.Gulp => Gulp(),
+                SfxType.Click => Click(),
                 _ => new float[1]
             };
 
@@ -193,6 +203,120 @@ namespace Game.Audio
             }
 
             return data;
+        }
+
+        // Yumuşak uğultu + cama vuran rastgele damlalar. Baş ve son birbirine karıştırılır: döngü duyulmaz.
+        private static float[] Rain()
+        {
+            const float length = 8f;
+            const float blend = 1f;
+            var data = new float[Samples(length + blend)];
+            var random = new System.Random(17);
+            float low = 0f;
+            float band = 0f;
+            for (int n = 0; n < data.Length; n++)
+            {
+                float noise = (float)random.NextDouble() * 2f - 1f;
+                low += (noise - low) * 0.12f;
+                band += (noise - band) * 0.45f;
+                data[n] = low * 0.9f + (band - low) * 0.22f;
+            }
+
+            for (int i = 0; i < 900; i++)
+            {
+                AddDrop(data, (float)random.NextDouble() * (length + blend), 900f + (float)random.NextDouble() * 2200f,
+                    0.05f + (float)random.NextDouble() * 0.14f);
+            }
+
+            return Crossfade(data, Samples(blend));
+        }
+
+        // Tek çatırtı değil, uzakta yuvarlanan alçak gürültü.
+        private static float[] Thunder()
+        {
+            var data = new float[Samples(5f)];
+            var random = new System.Random(19);
+            float low = 0f;
+            for (int n = 0; n < data.Length; n++)
+            {
+                float t = n / (float)SampleRate;
+                float noise = (float)random.NextDouble() * 2f - 1f;
+                low += (noise - low) * 0.012f;
+                float roll = 0.6f + 0.4f * Mathf.Sin(2f * Mathf.PI * (1.1f + 0.5f * Mathf.Sin(t * 1.7f)) * t);
+                data[n] = low * roll * Mathf.Min(1f, t / 0.25f) * Mathf.Exp(-t * 0.95f);
+            }
+
+            return data;
+        }
+
+        private static float[] WaterRun()
+        {
+            const float length = 3f;
+            const float blend = 0.5f;
+            var data = new float[Samples(length + blend)];
+            var random = new System.Random(23);
+            float low = 0f;
+            for (int n = 0; n < data.Length; n++)
+            {
+                float noise = (float)random.NextDouble() * 2f - 1f;
+                low += (noise - low) * 0.3f;
+                data[n] = (noise - low) * 0.22f + low * 0.5f;
+            }
+
+            for (int i = 0; i < 260; i++)
+            {
+                AddDrop(data, (float)random.NextDouble() * (length + blend), 500f + (float)random.NextDouble() * 900f, 0.2f);
+            }
+
+            return Crossfade(data, Samples(blend));
+        }
+
+        // Alçalıp yükselen boğuk bir ton.
+        private static float[] Gulp()
+        {
+            var data = new float[Samples(0.28f)];
+            float phase = 0f;
+            for (int n = 0; n < data.Length; n++)
+            {
+                float t = n / (float)data.Length;
+                phase += Mathf.Lerp(150f, 320f, Mathf.Sin(Mathf.PI * t)) / SampleRate;
+                data[n] = Mathf.Sin(2f * Mathf.PI * phase) * Mathf.Sin(Mathf.PI * t);
+            }
+
+            return data;
+        }
+
+        private static float[] Click()
+        {
+            var data = new float[Samples(0.07f)];
+            AddImpact(data, 0f, 1400f, 180f, 260f, new System.Random(29));
+            return data;
+        }
+
+        // Kısa, hızla sönen yüksek ton: tek damla.
+        private static void AddDrop(float[] data, float start, float frequency, float gain)
+        {
+            int offset = Samples(start);
+            int length = Samples(0.04f);
+            for (int n = 0; n < length && offset + n < data.Length; n++)
+            {
+                float t = n / (float)SampleRate;
+                data[offset + n] += Mathf.Sin(2f * Mathf.PI * frequency * t) * Mathf.Exp(-t * 170f) * gain;
+            }
+        }
+
+        // Son parçayı başa karıştırır, klip o kadar kısalır. Döngü noktasında tık sesi kalmaz.
+        private static float[] Crossfade(float[] data, int overlap)
+        {
+            var result = new float[data.Length - overlap];
+            System.Array.Copy(data, result, result.Length);
+            for (int n = 0; n < overlap; n++)
+            {
+                float t = n / (float)overlap;
+                result[n] = data[n] * Mathf.Sqrt(t) + data[result.Length + n] * Mathf.Sqrt(1f - t);
+            }
+
+            return result;
         }
 
         // Darbe sesi: alçak geçirilmiş gürültü (çarpma) + sönümlenen sinüs (gövde).
