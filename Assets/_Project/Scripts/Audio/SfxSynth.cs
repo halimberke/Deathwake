@@ -16,10 +16,7 @@ namespace Game.Audio
         Drone,      // Ana menü: alçak tesis uğultusu (döngü)
         GasHiss,    // Gaz nozulları: basınçlı tıslama (döngü)
         Rain,       // Pencerede yağmur (döngü)
-        Thunder,    // Uzaktan gök gürültüsü
-        WaterRun,   // Musluktan akan su (döngü)
-        Gulp,       // Yutkunma
-        Click       // Lamba düğmesi
+        Thunder     // Uzaktan gök gürültüsü
     }
 
     // Geçici efekt sesleri kodla üretilir. Ses adımında gerçek kayıtlarla değiştirilebilir.
@@ -45,9 +42,6 @@ namespace Game.Audio
                 SfxType.GasHiss => GasHiss(),
                 SfxType.Rain => Rain(),
                 SfxType.Thunder => Thunder(),
-                SfxType.WaterRun => WaterRun(),
-                SfxType.Gulp => Gulp(),
-                SfxType.Click => Click(),
                 _ => new float[1]
             };
 
@@ -246,50 +240,6 @@ namespace Game.Audio
                 data[n] = low * roll * Mathf.Min(1f, t / 0.25f) * Mathf.Exp(-t * 0.95f);
             }
 
-            return data;
-        }
-
-        private static float[] WaterRun()
-        {
-            const float length = 3f;
-            const float blend = 0.5f;
-            var data = new float[Samples(length + blend)];
-            var random = new System.Random(23);
-            float low = 0f;
-            for (int n = 0; n < data.Length; n++)
-            {
-                float noise = (float)random.NextDouble() * 2f - 1f;
-                low += (noise - low) * 0.3f;
-                data[n] = (noise - low) * 0.22f + low * 0.5f;
-            }
-
-            for (int i = 0; i < 260; i++)
-            {
-                AddDrop(data, (float)random.NextDouble() * (length + blend), 500f + (float)random.NextDouble() * 900f, 0.2f);
-            }
-
-            return Crossfade(data, Samples(blend));
-        }
-
-        // Alçalıp yükselen boğuk bir ton.
-        private static float[] Gulp()
-        {
-            var data = new float[Samples(0.28f)];
-            float phase = 0f;
-            for (int n = 0; n < data.Length; n++)
-            {
-                float t = n / (float)data.Length;
-                phase += Mathf.Lerp(150f, 320f, Mathf.Sin(Mathf.PI * t)) / SampleRate;
-                data[n] = Mathf.Sin(2f * Mathf.PI * phase) * Mathf.Sin(Mathf.PI * t);
-            }
-
-            return data;
-        }
-
-        private static float[] Click()
-        {
-            var data = new float[Samples(0.07f)];
-            AddImpact(data, 0f, 1400f, 180f, 260f, new System.Random(29));
             return data;
         }
 

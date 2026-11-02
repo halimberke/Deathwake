@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0781a77fab4e4ba428ef2edcf31c8f15, type: 3}
+  m_Name: Sound_Step_Grate
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Audio.SoundSet
+  clips:
+  - {fileID: 8300000, guid: 650d85042904e104bbe7ff3b26affb13, type: 3}
+  - {fileID: 8300000, guid: be9a325bcca7c6e468d20d627fef84c0, type: 3}
+  - {fileID: 8300000, guid: 0706b0650bce2a54bbe049b7002ad2af, type: 3}
+  - {fileID: 8300000, guid: 294402d8416e420419d708a6b74f99a1, type: 3}
+  - {fileID: 8300000, guid: 3fc9b185e7947d94386a8bad46c8ce35, type: 3}
+  - {fileID: 8300000, guid: 36348bb21309262498b56703365b52ff, type: 3}
+  - {fileID: 8300000, guid: ca3dd7d1d46ad86409859799665e9e1a, type: 3}
+  volume: 0.24
+  pitchRange: {x: 0.95, y: 1.05}
+  spatial: 0
+  minDistance: 2
+  maxDistance: 20

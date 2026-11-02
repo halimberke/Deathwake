@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0781a77fab4e4ba428ef2edcf31c8f15, type: 3}
+  m_Name: Sound_Bullet_Hit
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Audio.SoundSet
+  clips:
+  - {fileID: 8300000, guid: cc7080a87b0c1414ca23061dd3a7c8cf, type: 3}
+  - {fileID: 8300000, guid: f1c31d62bc74ea64e9ef8dba63d1ce3a, type: 3}
+  - {fileID: 8300000, guid: 4e78d1e66bbc628479c85aecf5238967, type: 3}
+  volume: 0.42
+  pitchRange: {x: 0.94, y: 1.06}
+  spatial: 0
+  minDistance: 2
+  maxDistance: 12

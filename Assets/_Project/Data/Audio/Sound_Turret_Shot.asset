@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0781a77fab4e4ba428ef2edcf31c8f15, type: 3}
+  m_Name: Sound_Turret_Shot
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Audio.SoundSet
+  clips:
+  - {fileID: 8300000, guid: 084aa20faf112924ca4279517bb6f23e, type: 3}
+  - {fileID: 8300000, guid: cb70389b51bd38842b7ba8da8270da72, type: 3}
+  - {fileID: 8300000, guid: d34fe8022d78769469971b2fb52ab675, type: 3}
+  - {fileID: 8300000, guid: e91b5ef5f271cd242b24d2cc8c245de6, type: 3}
+  - {fileID: 8300000, guid: c9c0b4e142bbf99418aab744beea9da1, type: 3}
+  volume: 0.62
+  pitchRange: {x: 0.93, y: 1.07}
+  spatial: 1
+  minDistance: 7
+  maxDistance: 50

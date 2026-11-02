@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0781a77fab4e4ba428ef2edcf31c8f15, type: 3}
+  m_Name: Sound_Hatch
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Audio.SoundSet
+  clips:
+  - {fileID: 8300000, guid: 42233b5e0d19eab4babebfe2228175da, type: 3}
+  - {fileID: 8300000, guid: 4a7d9a6409b9c424f8d7d10fafbe48f5, type: 3}
+  volume: 0.7
+  pitchRange: {x: 0.96, y: 1.04}
+  spatial: 1
+  minDistance: 2.5
+  maxDistance: 22

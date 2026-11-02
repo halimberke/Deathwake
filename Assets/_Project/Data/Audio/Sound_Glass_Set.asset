@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0781a77fab4e4ba428ef2edcf31c8f15, type: 3}
+  m_Name: Sound_Glass_Set
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Audio.SoundSet
+  clips:
+  - {fileID: 8300000, guid: 776f15f5d60e1b24d9f9672cddd00cd6, type: 3}
+  - {fileID: 8300000, guid: 49853baf68e5a184996d73c14ba03913, type: 3}
+  volume: 0.5
+  pitchRange: {x: 0.97, y: 1.03}
+  spatial: 1
+  minDistance: 2
+  maxDistance: 12
