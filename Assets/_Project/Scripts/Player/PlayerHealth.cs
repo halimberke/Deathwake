@@ -1,4 +1,5 @@
 using System;
+using Game.Audio;
 using Game.Chamber;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ namespace Game.Player
         [SerializeField] private float regenDelay = 1.5f;
         [Tooltip("İyileşme hızı (can/sn).")]
         [SerializeField] private float regenRate = 40f;
+        [SerializeField] private SoundSet hitSound;
 
         public float Current { get; private set; }
         public float Normalized => Current / maxHealth;
@@ -53,6 +55,7 @@ namespace Game.Player
 
             Current = Mathf.Max(0f, Current - amount);
             timeSinceDamage = 0f;
+            Sfx.Play(hitSound, transform.position);
             Damaged?.Invoke();
 
             if (Current <= 0f)

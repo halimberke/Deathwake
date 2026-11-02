@@ -1,3 +1,4 @@
+using Game.Audio;
 using Game.Interaction;
 using Game.Localization;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace Game.Narrative
     {
         [SerializeField] private NoteDefinition note;
         [SerializeField] private string prompt = "Oku";
+        [SerializeField] private SoundSet readSound;
         [Tooltip("Not her okunduğunda. Senaryo buradan sinyal alabilir.")]
         [SerializeField] private UnityEvent onRead;
 
@@ -21,6 +23,7 @@ namespace Game.Narrative
         {
             if (interactor is PlayerInteractor)
             {
+                Sfx.Play(readSound, transform.position);
                 Notebook.Read(note);
                 onRead.Invoke();
             }

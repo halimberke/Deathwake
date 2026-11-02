@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game.Audio;
 using Game.Chamber;
 using Game.Flow;
 using Game.Localization;
@@ -54,6 +55,12 @@ namespace Game.Narrative
         [Tooltip("{0} = defter tuşu.")]
         [SerializeField] private string addedToastFormat = "Deftere eklendi   [{0}]";
         [SerializeField] private float toastDuration = 2.5f;
+
+        [Header("Ses")]
+        [SerializeField] private SoundSet openSound;
+        [SerializeField] private SoundSet closeSound;
+        [Tooltip("Deftere yeni not eklenince.")]
+        [SerializeField] private SoundSet addedSound;
 
         [Header("Kâğıt ve mürekkep")]
         [SerializeField] private Color typedPaper = new Color(0.86f, 0.85f, 0.8f);
@@ -171,6 +178,7 @@ namespace Game.Narrative
             notebookHint.text = Loc.Format(notebookHintFormat, KeyLabels.Get(notebookAction.action));
             readerPanel.SetActive(false);
             notebookPanel.SetActive(true);
+            Sfx.Play(openSound, transform.position);
             SetOpen(true);
         }
 
@@ -227,6 +235,7 @@ namespace Game.Narrative
 
         private void Close()
         {
+            Sfx.Play(closeSound, transform.position);
             readerPanel.SetActive(false);
             notebookPanel.SetActive(false);
             SetOpen(false);
@@ -234,6 +243,7 @@ namespace Game.Narrative
             if (toastPending)
             {
                 toastPending = false;
+                Sfx.Play(addedSound, transform.position);
                 addedToastLabel.text = Loc.Format(addedToastFormat, KeyLabels.Get(notebookAction.action));
                 if (toastRoutine != null)
                 {

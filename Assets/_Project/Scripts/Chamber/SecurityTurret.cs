@@ -1,3 +1,4 @@
+using Game.Audio;
 using Game.Echo;
 using Game.Localization;
 using Game.Player;
@@ -43,6 +44,18 @@ namespace Game.Chamber
         [SerializeField] private string playerTag = "Player";
         [SerializeField] private string deathReason = "Taret seni vurdu";
 
+        [Header("Ses")]
+        [SerializeField] private SoundSet shotSound;
+        [SerializeField] private SoundSet lockSound;
+        [SerializeField] private SoundSet lostSound;
+        [Tooltip("Yankıya atılan kurşun arkadaki yüzeye çarpınca.")]
+        [SerializeField] private SoundSet ricochetSound;
+        [Tooltip("Kafanın motoru: döngü. Sesi ve perdesi dönüş hızına bağlıdır.")]
+        [SerializeField] private AudioSource servo;
+        [SerializeField] private float servoVolume = 0.16f;
+        [Tooltip("Ses, hedef değere saniyede bu kadar yaklaşır.")]
+        [SerializeField] private float servoResponse = 12f;
+
         [Header("Hedef noktaları (ayaktan yükseklik)")]
         [SerializeField] private float chestHeight = 1.1f;
         [SerializeField] private float headHeight = 1.6f;
@@ -66,12 +79,15 @@ namespace Game.Chamber
         private float flashTimer;
         private Quaternion restRotation;
         private Mode mode = Mode.Scanning;
-
+        private Quaternion lastHeadRotation;
+        private float servoAmount;
 
         private void Awake()
         {
             restRotation = head.localRotation;
+            lastHeadRotation = head.rotation;
             laser.positionCount = 2;
+            servo.volume = 0f;
         }
 
         private void OnEnable()
@@ -111,6 +127,7 @@ namespace Game.Chamber
             {
                 laser.enabled = false;
                 spot.enabled = false;
+                UpdateServo(false);
                 return;
             }
 
@@ -118,6 +135,19 @@ namespace Game.Chamber
             UpdateFire(seeing);
             UpdateAim();
             UpdateVisuals();
+            UpdateServo(true);
+        }
+
+        // Motor sesi kafanın o anki dönüş hızını izler: tararken hafif, hedefe dönerken yüksek ve tiz.
+        private void UpdateServo(bool running)
+        {
+            float turned = Quaternion.Angle(lastHeadRotation, head.rotation);
+            lastHeadRotation = head.rotation;
+            float rate = running && Time.deltaTime > 0f ? Mathf.Clamp01(turned / Time.deltaTime / turnSpeed) : 0f;
+            float target = running ? Mathf.Sqrt(rate) : 0f;
+            servoAmount = Mathf.MoveTowards(servoAmount, target, servoResponse * Time.deltaTime);
+            servo.volume = servoAmount * servoVolume;
+            servo.pitch = Mathf.Lerp(0.8f, 1.2f, servoAmount);
         }
 
         // ---------- Kilit ----------
@@ -175,6 +205,7 @@ namespace Game.Chamber
 
         private void Lock(Transform newTarget, GhostActor ghost, Vector3 point)
         {
+            Sfx.Play(lockSound, eye.position);
             target = newTarget;
             targetGhost = ghost;
             lastSeenPoint = point;
@@ -186,6 +217,11 @@ namespace Game.Chamber
 
         private void Unlock()
         {
+            if (target != null && chamber.State == ChamberState.Running)
+            {
+                Sfx.Play(lostSound, eye.position);
+            }
+
             target = null;
             targetGhost = null;
             lostTimer = 0f;
@@ -242,6 +278,7 @@ namespace Game.Chamber
 
             fireTimer = 0f;
             flashTimer = shotFlashDuration;
+            Sfx.Play(shotSound, eye.position);
 
             if (targetGhost != null)
             {
@@ -251,6 +288,7 @@ namespace Game.Chamber
                 shotEnd = Physics.Raycast(eye.position, direction, out RaycastHit wall, 100f, occluderMask, QueryTriggerInteraction.Ignore)
                     ? wall.point
                     : eye.position + direction * 100f;
+                Sfx.Play(ricochetSound, shotEnd);
                 return;
             }
 

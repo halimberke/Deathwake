@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.AnnouncementDefinition
   speaker: {fileID: 11400000, guid: e06fb045e1bb5824a9b35a3d2f7e01ab, type: 2}
   lines:
-  - "Denek 7 teslim al\u0131nd\u0131."
-  - "Uyanma prosed\xFCr\xFC ba\u015Fl\u0131yor."
+  - "Denek 7 al\u0131nd\u0131."
   playOnce: 1
   linePause: 0.4

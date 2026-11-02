@@ -15,6 +15,8 @@ namespace Game.Narrative
         [Tooltip("Son satır bittikten sonra altyazının ekranda kalma süresi (sn).")]
         [SerializeField] private float lingerDuration = 1.2f;
 
+        private static AnnouncementPlayer current;
+
         private readonly Queue<AnnouncementDefinition> queue = new();
         private AudioSource source;
         private Coroutine playing;
@@ -26,8 +28,12 @@ namespace Game.Narrative
             source.spatialBlend = 0f; // Hoparlör her yerden duyulur.
         }
 
+        // Şu an bir anons ya da düşünce çalıyor mu? Geçiş kabini bitmesini bekler.
+        public static bool IsPlaying => current != null && current.playing != null;
+
         private void OnEnable()
         {
+            current = this;
             Announcer.Requested += Enqueue;
             Announcer.Stopped += StopAll;
         }

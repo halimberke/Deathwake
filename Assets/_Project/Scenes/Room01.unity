@@ -281,6 +281,8 @@ MonoBehaviour:
   openAngle: 90
   rotateSpeed: 180
   startOpen: 0
+  openSound: {fileID: 11400000, guid: dd3523f8d7f544040b5f0f9cb9acd47c, type: 2}
+  closeSound: {fileID: 11400000, guid: 124829af860e8b748a75b49f8a609c9c, type: 2}
   isLocked: 1
   requiredItem: {fileID: 0}
   openPrompt: "A\xE7"
@@ -565,6 +567,7 @@ MonoBehaviour:
   loop: 1
   spatial: 0
   volume: 0.22
+  minDistance: 1.5
   playOnStart: 0
   ignoreListenerPause: 0
 --- !u!82 &357602763
@@ -2078,6 +2081,7 @@ MonoBehaviour:
   solvedColor: {r: 0.3, g: 1, b: 0.4, a: 1}
   warningTime: 10
   blinkRate: 2
+  tickSound: {fileID: 11400000, guid: 09d7812a486366944abe5ea17dfa0090, type: 2}
 --- !u!1001 &1224998107
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2194,6 +2198,8 @@ MonoBehaviour:
   onEntered:
     m_PersistentCalls:
       m_Calls: []
+  ambience: {fileID: 8300000, guid: 9d826dc1496d8194181b959460ccfa1f, type: 3}
+  ambienceVolume: 0.05
   sunIntensity: 0.6
   ambientColor: {r: 0.55, g: 0.57, b: 0.6, a: 1}
 --- !u!4 &1243672391
@@ -2274,6 +2280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.NoteItem
   note: {fileID: 11400000, guid: 329d6cc712670b047aa3e4af12461e6c, type: 2}
   prompt: Oku
+  readSound: {fileID: 11400000, guid: 8dffdd88180f3c44a98dd7e29002906f, type: 2}
   onRead:
     m_PersistentCalls:
       m_Calls: []
@@ -3357,6 +3364,8 @@ MonoBehaviour:
   indicator: {fileID: 675014065}
   idleColor: {r: 0.6, g: 0.15, b: 0.15, a: 1}
   pressedColor: {r: 0.2, g: 0.9, b: 0.3, a: 1}
+  pressSound: {fileID: 11400000, guid: 5334c05669f6a4e49bcb87a8315aae14, type: 2}
+  releaseSound: {fileID: 11400000, guid: 0c4b548b418b3b04f9e4134397b58d50, type: 2}
   onPressed:
     m_PersistentCalls:
       m_Calls:
@@ -4260,6 +4269,7 @@ MonoBehaviour:
   - {fileID: 246647642}
   - {fileID: 246647641}
   hiss: {fileID: 357602762}
+  alarm: {fileID: 11400000, guid: 6c0508a8bdfe2174dac96fb69bdbb581, type: 2}
   gasColor: {r: 0.62, g: 0.65, b: 0.68, a: 1}
 --- !u!114 &1127642661068927538
 MonoBehaviour:

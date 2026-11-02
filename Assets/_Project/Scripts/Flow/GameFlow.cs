@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Game.Audio;
 using Game.Chamber;
 using Game.Narrative;
 using Game.Player;
@@ -22,12 +23,17 @@ namespace Game.Flow
         [SerializeField] private RetroAtmosphere atmosphere;
         [SerializeField] private MainMenu mainMenu;
         [SerializeField] private GameSave save;
+        [SerializeField] private AmbiencePlayer ambience;
 
         [Header("Süreler (saniye)")]
         [Tooltip("Ölüm anından karartma başlayana kadar.")]
         [SerializeField] private float deathDuration = 1.5f;
         [Tooltip("Kabinin arka kapısının kapanma süresi. Önceki oda bundan sonra atılır.")]
         [SerializeField] private float airlockCloseDuration = 0.6f;
+        [Tooltip("Kabindeki temizlik en az bu kadar sürer. Not okunabilsin, önceki odanın anonsu bitsin.")]
+        [SerializeField] private float decontaminationDuration = 5f;
+        [Tooltip("Anons sürse bile temizlik en fazla bu kadar sürer.")]
+        [SerializeField] private float decontaminationMaxDuration = 14f;
 
         private RoomRoot current;
         private int currentIndex = -1;
@@ -142,6 +148,7 @@ namespace Game.Flow
         private void EnterCurrent()
         {
             atmosphere.SetRoomLighting(current.SunIntensity, current.AmbientColor);
+            ambience.Play(current.Ambience, current.AmbienceVolume);
 
             if (current.Chamber != null)
             {
@@ -231,7 +238,9 @@ namespace Game.Flow
             }
 
             busy = true;
+            float started = Time.time;
             next.Airlock.CloseBack();
+            next.Airlock.BeginDecontamination();
             yield return new WaitForSeconds(airlockCloseDuration);
 
             player.ClearHand();
@@ -244,7 +253,18 @@ namespace Game.Flow
             next = null;
 
             SceneManager.SetActiveScene(current.gameObject.scene);
-            current.Airlock.OpenFront();
+
+            // Odanın saati ve anonsları temizlik bitince başlar.
+            yield return new WaitUntil(() =>
+            {
+                float elapsed = Time.time - started;
+                return elapsed >= decontaminationMaxDuration
+                       || (elapsed >= decontaminationDuration && !AnnouncementPlayer.IsPlaying);
+            });
+            current.Airlock.EndDecontamination();
+
+            // Oyuncu notu okuyup kapıyı kendisi açar; oda (saat, anonslar) o anda başlar.
+            yield return new WaitUntil(() => current.Airlock.FrontIsOpen);
             EnterCurrent();
             busy = false;
         }

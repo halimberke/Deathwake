@@ -15,6 +15,5 @@ MonoBehaviour:
   speaker: {fileID: 11400000, guid: e06fb045e1bb5824a9b35a3d2f7e01ab, type: 2}
   lines:
   - "Kal\u0131nt\u0131 tespit edildi."
-  - "Etkile\u015Fim g\xF6zlemleniyor."
   playOnce: 1
   linePause: 0.4

@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Interaction.ItemDefinition
   displayName: "K\xFC\xE7\xFCk Kasa"
   carrySpeedMultiplier: 0.5
-  isHeavy: 1
+  pickupSound: {fileID: 11400000, guid: d25f30ed121afcd4faf4a2a0d35c85e4, type: 2}
+  placeSound: {fileID: 11400000, guid: 37cd6b34bd9762e48bf0421402a4d131, type: 2}

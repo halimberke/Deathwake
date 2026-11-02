@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.AnnouncementDefinition
   speaker: {fileID: 11400000, guid: e06fb045e1bb5824a9b35a3d2f7e01ab, type: 2}
   lines:
-  - "Denek 7. Deney 01 ba\u015Fl\u0131yor."
+  - Deney 01.
   - "Bu odadan tek ba\u015F\u0131n\u0131za \xE7\u0131kamazs\u0131n\u0131z."
   playOnce: 1
   linePause: 0.4

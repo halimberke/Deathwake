@@ -45,6 +45,9 @@ namespace Game.Flow
         [SerializeField] private string overwriteTitle = "Yeni oyun başlatılsın mı?";
         [SerializeField] private string overwriteBody = "Mevcut kayıt silinecek. Bu işlem geri alınamaz.";
         [SerializeField] private string overwriteConfirm = "Kaydı sil ve başla";
+        [SerializeField] private string quitTitle = "Oyundan çıkılsın mı?";
+        [SerializeField] private string quitBody = "Oyun kapatılacak.";
+        [SerializeField] private string quitConfirm = "Çık";
 
         public static bool IsOpen { get; private set; }
 
@@ -61,7 +64,7 @@ namespace Game.Flow
             continueItem.Button.onClick.AddListener(Continue);
             newGameItem.Button.onClick.AddListener(NewGame);
             settingsItem.Button.onClick.AddListener(OpenSettings);
-            quitItem.Button.onClick.AddListener(Quit);
+            quitItem.Button.onClick.AddListener(AskQuit);
             settings.Closed += HandleSettingsClosed;
         }
 
@@ -70,7 +73,7 @@ namespace Game.Flow
             continueItem.Button.onClick.RemoveListener(Continue);
             newGameItem.Button.onClick.RemoveListener(NewGame);
             settingsItem.Button.onClick.RemoveListener(OpenSettings);
-            quitItem.Button.onClick.RemoveListener(Quit);
+            quitItem.Button.onClick.RemoveListener(AskQuit);
             settings.Closed -= HandleSettingsClosed;
             IsOpen = false;
         }
@@ -160,6 +163,14 @@ namespace Game.Flow
             foreach (GameObject item in hideWhileOpen)
             {
                 item.SetActive(visible);
+            }
+        }
+
+        private void AskQuit()
+        {
+            if (!leaving)
+            {
+                confirm.Ask(quitTitle, quitBody, quitConfirm, panel, Quit);
             }
         }
 

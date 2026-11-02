@@ -1,4 +1,5 @@
 using System.Collections;
+using Game.Audio;
 using Game.Localization;
 using UnityEngine;
 
@@ -15,6 +16,10 @@ namespace Game.Interaction
         [Tooltip("Derece/saniye.")]
         [SerializeField] private float rotateSpeed = 180f;
         [SerializeField] private bool startOpen;
+
+        [Header("Ses")]
+        [SerializeField] private SoundSet openSound;
+        [SerializeField] private SoundSet closeSound;
 
         [Header("Kilit")]
         [SerializeField] private bool isLocked;
@@ -84,6 +89,9 @@ namespace Game.Interaction
         public void Open() => SetOpen(true);
         public void Close() => SetOpen(false);
         public void Toggle() => SetOpen(!isOpen);
+
+        // Oyuncunun görmediği hazırlık: sonraki oda arka planda yüklenirken kabin kapısı ses çıkarmaz.
+        public void OpenSilently() => SetOpen(true, true);
         public void Unlock() => isLocked = false;
         public void Lock() => isLocked = true;
 
@@ -92,7 +100,7 @@ namespace Game.Interaction
             return requiredItem != null && interactor.Hand != null && interactor.Hand.IsHolding(requiredItem);
         }
 
-        private void SetOpen(bool open)
+        private void SetOpen(bool open, bool silent = false)
         {
             if (open == isOpen)
             {
@@ -100,6 +108,10 @@ namespace Game.Interaction
             }
 
             isOpen = open;
+            if (!silent)
+            {
+                Sfx.Play(open ? openSound : closeSound, hinge.position);
+            }
 
             if (moveRoutine != null)
             {

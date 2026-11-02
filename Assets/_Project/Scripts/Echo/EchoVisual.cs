@@ -19,6 +19,7 @@ namespace Game.Echo
         [SerializeField] private float actionFlash = 1.6f;
         [SerializeField] private float flashFadeSpeed = 4f;
         [SerializeField] private ProceduralSound appearSound;
+        [SerializeField] private SoundSet vanishSound;
 
         [Header("Yürüyüş")]
         [SerializeField] private MeshFilter bodyMesh;
@@ -75,6 +76,7 @@ namespace Game.Echo
         private void HandleFinished()
         {
             vanishing = true;
+            Sfx.Play(vanishSound, transform.position);
         }
 
         private void Update()

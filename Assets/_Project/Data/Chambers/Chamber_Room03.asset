@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Chamber_Room03
   m_EditorClassIdentifier: Assembly-CSharp::Game.Chamber.ChamberDefinition
   titleCode: DENEY 03
-  displayName: Basamaklar
+  displayName: "Y\xFCkseklik"
   attemptDuration: 18
   maxEchoes: 1
   timeoutReason: "Gazdan bo\u011Fuldun"

@@ -18,8 +18,13 @@ namespace Game.Story
         [SerializeField] private Transform underFaucet;
         [SerializeField] private Transform handle;
         [SerializeField] private GameObject stream;
-        [SerializeField] private ProceduralSound runningWater;
-        [SerializeField] private ProceduralSound gulp;
+
+        [Header("Ses")]
+        [SerializeField] private SoundSet faucetOn;
+        [SerializeField] private SoundSet faucetOff;
+        [SerializeField] private SoundSet waterFill;
+        [SerializeField] private SoundSet glassLift;
+        [SerializeField] private SoundSet glassSet;
 
         [Header("Hareket")]
         [SerializeField] private float handleAngle = 55f;
@@ -32,7 +37,6 @@ namespace Game.Story
         [SerializeField] private float tiltAngle = 75f;
         [Tooltip("İçerken kamera bu kadar yukarı bakar (derece).")]
         [SerializeField] private float headTilt = 14f;
-        [SerializeField] private int gulps = 3;
 
         [SerializeField] private UnityEvent onFinished;
 
@@ -51,14 +55,16 @@ namespace Game.Story
             Quaternion restRotation = glass.rotation;
             Quaternion handleRest = handle.localRotation;
 
+            Sfx.Play(glassLift, glass.position);
             yield return MoveGlass(underFaucet.position, underFaucet.rotation, moveTime);
 
+            Sfx.Play(faucetOn, handle.position);
             yield return Turn(handle, handleRest, handleRest * Quaternion.Euler(0f, handleAngle, 0f), 0.25f);
             stream.SetActive(true);
-            runningWater.Play();
+            Sfx.Play(waterFill, underFaucet.position);
             yield return Animate(fillTime, t => SetLevel(fullLevel * t));
             stream.SetActive(false);
-            runningWater.Stop();
+            Sfx.Play(faucetOff, handle.position);
             yield return Turn(handle, handle.localRotation, handleRest, 0.25f);
 
             yield return Animate(liftTime, t =>
@@ -70,8 +76,6 @@ namespace Game.Story
 
             Quaternion headRest = view.localRotation;
             Quaternion headUp = headRest * Quaternion.Euler(-headTilt, 0f, 0f);
-            float nextGulp = 0.25f;
-            int played = 0;
             yield return Animate(drinkTime, t =>
             {
                 float rise = Smooth(Mathf.Clamp01(t * 3f));
@@ -79,16 +83,11 @@ namespace Game.Story
                 glass.SetPositionAndRotation(view.TransformPoint(mouthOffset),
                     view.rotation * Quaternion.Euler(-tiltAngle * rise, 0f, 0f));
                 SetLevel(fullLevel * (1f - Mathf.Clamp01((t - 0.2f) / 0.8f)));
-                if (played < gulps && t >= nextGulp)
-                {
-                    played++;
-                    nextGulp += 0.7f / gulps;
-                    gulp.Play();
-                }
             });
 
             yield return Animate(0.35f, t => view.localRotation = Quaternion.Slerp(headUp, headRest, Smooth(t)));
             yield return MoveGlass(restPosition, restRotation, liftTime);
+            Sfx.Play(glassSet, restPosition);
 
             player.SetScriptedBlock(false);
             onFinished.Invoke();

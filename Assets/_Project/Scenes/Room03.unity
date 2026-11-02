@@ -187,6 +187,8 @@ MonoBehaviour:
   maxPickupSpeed: 0.5
   maxDepenetrationSpeed: 1
   keepUpright: 1
+  impactSpeed: 0.8
+  loudImpactSpeed: 4
 --- !u!54 &74916617
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -836,6 +838,8 @@ MonoBehaviour:
   maxPickupSpeed: 0.5
   maxDepenetrationSpeed: 1
   keepUpright: 1
+  impactSpeed: 0.8
+  loudImpactSpeed: 4
 --- !u!54 &331181391
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -990,6 +994,7 @@ MonoBehaviour:
   loop: 1
   spatial: 0
   volume: 0.22
+  minDistance: 1.5
   playOnStart: 0
   ignoreListenerPause: 0
 --- !u!82 &357602763
@@ -1427,6 +1432,7 @@ MonoBehaviour:
   - {fileID: 246647642}
   - {fileID: 246647641}
   hiss: {fileID: 357602762}
+  alarm: {fileID: 11400000, guid: 6c0508a8bdfe2174dac96fb69bdbb581, type: 2}
   gasColor: {r: 0.62, g: 0.65, b: 0.68, a: 1}
 --- !u!1 &687391453
 GameObject:
@@ -1732,6 +1738,7 @@ GameObject:
   - component: {fileID: 766241497}
   - component: {fileID: 766241495}
   - component: {fileID: 766241496}
+  - component: {fileID: 766241499}
   m_Layer: 0
   m_Name: Chamber
   m_TagString: Untagged
@@ -1803,6 +1810,32 @@ Transform:
   m_Children: []
   m_Father: {fileID: 858943443}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &766241499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 766241494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d1da48844e1c01448003c542c00e7b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Narrative.ChamberAnnouncements
+  chamber: {fileID: 766241495}
+  entries:
+  - moment: 0
+    attempt: 1
+    announcement: {fileID: 11400000, guid: 52058369d2f062346967f8c3ecf0ac6d, type: 2}
+  - moment: 0
+    attempt: 2
+    announcement: {fileID: 11400000, guid: f57f2aab112728b48a4de6a13241d54b, type: 2}
+  - moment: 1
+    attempt: 1
+    announcement: {fileID: 11400000, guid: df37f6085d5812b478d6b5f0c45ad527, type: 2}
+  - moment: 2
+    attempt: 0
+    announcement: {fileID: 11400000, guid: 8b98aa343e82ff442b3469031d3eba9e, type: 2}
 --- !u!1 &785274239
 GameObject:
   m_ObjectHideFlags: 0
@@ -1953,6 +1986,8 @@ MonoBehaviour:
   onEntered:
     m_PersistentCalls:
       m_Calls: []
+  ambience: {fileID: 8300000, guid: 9d826dc1496d8194181b959460ccfa1f, type: 3}
+  ambienceVolume: 0.05
   sunIntensity: 0.6
   ambientColor: {r: 0.55, g: 0.57, b: 0.6, a: 1}
 --- !u!4 &858943443
@@ -2565,6 +2600,7 @@ MonoBehaviour:
   solvedColor: {r: 0.3, g: 1, b: 0.4, a: 1}
   warningTime: 10
   blinkRate: 2
+  tickSound: {fileID: 11400000, guid: 09d7812a486366944abe5ea17dfa0090, type: 2}
 --- !u!1 &1469988608
 GameObject:
   m_ObjectHideFlags: 0
@@ -3029,12 +3065,12 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
+  m_fontSize: 3.75
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

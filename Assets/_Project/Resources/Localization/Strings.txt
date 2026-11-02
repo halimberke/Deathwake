@@ -25,6 +25,7 @@ Bu odadaki bütün denemeler ve yankılar silinecek.	All attempts and echoes in 
 Ana menüye dönülsün mü?	Return to the main menu?
 Ana menüye dön	Return to main menu
 Oyundan çıkılsın mı?	Quit the game?
+Oyun kapatılacak.	The game will close.
 Yeni oyun başlatılsın mı?	Start a new game?
 Mevcut kayıt silinecek. Bu işlem geri alınamaz.	Your current save will be deleted. This cannot be undone.
 Kaydı sil ve başla	Delete save and start
@@ -107,7 +108,7 @@ Bekleyiş	The Wait
 DENEY 02	EXPERIMENT 02
 Geçiş Kutusu	Pass-Through
 DENEY 03	EXPERIMENT 03
-Basamaklar	Steps
+Yükseklik	Elevation
 DENEY 04	EXPERIMENT 04
 Gözetim	Surveillance
 Erişim Kartı	Access Card
@@ -117,22 +118,13 @@ Test Anahtarı	Test Key
 
 # Konuşmacılar
 ANONS	INTERCOM
+???	???
 TELEFON	PHONE
 
 # Anonslar: tesis soğuk ve kliniktir, yankıya 'kalıntı' (residual) der
-Denek 7 teslim alındı.	Subject 7 received.
-Uyanma prosedürü başlıyor.	Beginning wake procedure.
-Denek 7. Kapıdan çıkın ve koridoru izleyin.	Subject 7. Exit through the door and follow the corridor.
-Denek 7. Deney 01 başlıyor.	Subject 7. Experiment 01 is beginning.
 Bu odadan tek başınıza çıkamazsınız.	You cannot leave this room alone.
-Deneme sonlandı. Kalıntı bekleniyor.	Attempt terminated. Awaiting residual.
 Kalıntı tespit edildi.	Residual detected.
-Etkileşim gözlemleniyor.	Interaction under observation.
-Deney 01 tamamlandı. Sonraki bölmeye ilerleyin.	Experiment 01 complete. Proceed to the next section.
 Kalıntı bekleniyor.	Awaiting residual.
-Deney 02 tamamlandı.	Experiment 02 complete.
-Denek 7, kalıntılarınızla uyumunuz beklenenin üzerinde.	Subject 7, your compatibility with your residuals exceeds expectations.
-Deney 02. Bölmeler arası nesne aktarımı.	Experiment 02. Inter-compartment object transfer.
 
 # Ev: iç ses ve telefon
 Ağzım kurumuş. Biraz su içeyim.	My mouth is dry. I should get some water.
@@ -156,3 +148,42 @@ Tesis 4 — Denek Bilgilendirme Formu	Facility 4 — Subject Information Form
 Bulunduğunuz alan bir deney odasıdır.\n\nOda kapısı, kontrol düğmesi yalnızca basılı tutulduğu sürece açık kalır.\n\nDeney süresince tahliye gazı devreye girebilir. Panik yapmayın.\n\nHer denemeniz gözlem altındadır.	The area you are in is an experiment room.\n\nThe room door stays open only while the control button is held down.\n\nPurge gas may be released during the experiment. Do not panic.\n\nEvery attempt is under observation.
 Buruşuk kâğıt	Crumpled paper
 Camdaki kutu iki yöne açılıyor.\n\nKendine güven.\nO sensin.\n\n\nBunu daha önce de yazmadım mı?	The box in the glass opens both ways.\n\nTrust yourself.\nIt's you.\n\n\nDidn't I write this before?
+
+# Karakterin düşünceleri
+Neredeyim ben...?	Where am I...?
+Denek 7... Bana mı diyorlar?	Subject 7... Are they talking to me?
+Ne... ne oldu bana?	What... what happened to me?
+...Öldüm mü ben?	...Did I just die?
+Her seferinde aynı yerde uyanıyorum.	Every time, I wake up in the same spot.
+Bu da ne?	What is that?
+...O ben miyim?	...Is that me?
+Yine o. Az önce yaptığım şeyi yapıyor.	That again. It's doing exactly what I just did.
+Bana yardım ediyor. Kendime yardım ediyorum.	It's helping me. I'm helping myself.
+Kaç kere öldüm ben? Saymayı bıraktım.	How many times have I died? I've stopped counting.
+
+# Room03 ve Room04 anonsları
+Deney 03. Yükseklik.	Experiment 03. Elevation.
+İki kasa, tek denek.	Two crates. One subject.
+Deney 04. Gözetim.	Experiment 04. Surveillance.
+
+# Kısaltılmış anonslar (2026-11-02)
+Denek 7 alındı.	Subject 7 received.
+Kapıdan çıkın.	Exit through the door.
+Deney 01.	Experiment 01.
+Deney 01 tamam.	Experiment 01 complete.
+Deney 02. Nesne aktarımı.	Experiment 02. Object transfer.
+Uyumunuz beklenenin üzerinde.	Your compatibility exceeds expectations.
+Kalıntı gözlemleniyor.	Residual under observation.
+Bu sefer daha hızlıydınız.	You were faster this time.
+Taret tek hedefe kilitlenir.	The turret locks onto one target.
+Taret önce kalıntıyı görür.	The turret sees the residual first.
+Sizi yeniden görmek güzel.	Good to see you again.
+
+# Yeni düşünceler (2026-11-02)
+Beni çıkarın buradan!	Get me out of here!
+Ne halt oluyor burada?!	What the fuck is happening?!
+Yine buradayım.	I'm here again.
+Bu bir kabus olmalı.	This has to be a nightmare.
+Kartı taşıyıp bana mı verdi o?	Did it just carry the card over and give it to me?
+Bu ses de ne?	What's that sound?
+Gaz mı bu?!	Is that gas?!

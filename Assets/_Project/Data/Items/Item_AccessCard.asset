@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: Item_AccessCard
   m_EditorClassIdentifier: Assembly-CSharp::Game.Interaction.ItemDefinition
   displayName: "Eri\u015Fim Kart\u0131"
+  carrySpeedMultiplier: 1
+  pickupSound: {fileID: 11400000, guid: df370afe0a789834faff0998cf3ac27a, type: 2}
+  placeSound: {fileID: 11400000, guid: 82199d660770b924eae01b9689d7266f, type: 2}

@@ -1,3 +1,4 @@
+using Game.Audio;
 using Game.Localization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,11 +19,16 @@ namespace Game.Interaction
         [SerializeField] private float maxDepenetrationSpeed = 1f;
         [Tooltip("Açıksa eşya devrilmez (sadece kendi ekseninde dönebilir). Kasalar rampaya dönüşmesin diye.")]
         [SerializeField] private bool keepUpright;
+        [Tooltip("Bundan yavaş çarpma ses çıkarmaz (m/sn).")]
+        [SerializeField] private float impactSpeed = 0.8f;
+        [Tooltip("Bu hızda çarpma tam ses çıkarır (m/sn).")]
+        [SerializeField] private float loudImpactSpeed = 4f;
 
         private Rigidbody body;
         private Vector3 originalScale;
         private Collider[] colliders;
         private RigidbodyInterpolation originalInterpolation;
+        private float nextImpactTime;
 
         // Eşyanın ait olduğu oda. Ele alınınca oyuncunun sahnesine (Core) geçer;
         // bırakılınca buraya döner ki oda yeniden yüklenince eşya da gitsin.
@@ -84,6 +90,11 @@ namespace Game.Interaction
         public void AttachTo(Transform holdPoint, bool fullSize = false)
         {
             IsHeld = true;
+            if (definition != null)
+            {
+                Sfx.Play(definition.PickupSound, transform.position);
+            }
+
             body.isKinematic = true;
             // Interpolation açık kalırsa Unity nesneyi eski fizik konumundan yavaşça çeker
             // ve eşya kameranın gerisinde kalır. Elde tutulurken kapatılır.
@@ -100,6 +111,13 @@ namespace Game.Interaction
         public void Release(Vector3 position, Quaternion rotation)
         {
             MoveTo(position, rotation);
+            if (definition != null)
+            {
+                Sfx.Play(definition.PlaceSound, position);
+            }
+
+            // Konduğu yere değmesi ikinci kez ses çıkarmasın.
+            nextImpactTime = Time.time + 0.3f;
 
             IsHeld = false;
             SetCollidersEnabled(true);
@@ -109,6 +127,18 @@ namespace Game.Interaction
             body.angularVelocity = Vector3.zero;
             // Kinematikten çıkan gövde "uyuyor" kalabilir ve havada asılı durur; yerçekimi için uyandırılır.
             body.WakeUp();
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            float speed = collision.relativeVelocity.magnitude;
+            if (definition == null || speed < impactSpeed || Time.time < nextImpactTime)
+            {
+                return;
+            }
+
+            nextImpactTime = Time.time + 0.15f;
+            Sfx.Play(definition.PlaceSound, transform.position, Mathf.Clamp01(speed / loudImpactSpeed));
         }
 
         // Eşyayı elden alıp hedef poza taşır. Collider'lar açılmadan ÖNCE çağrılmalı.

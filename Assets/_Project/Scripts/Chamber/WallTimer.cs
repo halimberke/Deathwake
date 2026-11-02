@@ -1,3 +1,4 @@
+using Game.Audio;
 using TMPro;
 using UnityEngine;
 
@@ -15,6 +16,10 @@ namespace Game.Chamber
         [SerializeField] private float warningTime = 10f;
         [Tooltip("Saniyedeki yanıp sönme sayısı.")]
         [SerializeField] private float blinkRate = 2f;
+        [Tooltip("Son saniyelerde her saniye çalar.")]
+        [SerializeField] private SoundSet tickSound;
+
+        private int lastTick = -1;
 
         private void Update()
         {
@@ -33,6 +38,13 @@ namespace Game.Chamber
             bool blinking = chamber.State == ChamberState.Running && remaining <= warningTime;
             label.color = solved ? solvedColor : normalColor;
             label.enabled = !blinking || Mathf.Repeat(Time.time * blinkRate, 1f) < 0.6f;
+
+            if (blinking && seconds != lastTick && seconds > 0)
+            {
+                Sfx.Play(tickSound, transform.position);
+            }
+
+            lastTick = seconds;
         }
     }
 }

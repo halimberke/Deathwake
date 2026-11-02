@@ -18,6 +18,7 @@ namespace Game.Settings
         private const string HeightKey = "settings.height";
         private const string BindingsKey = "settings.bindings";
         private const string LanguageKey = "settings.language";
+        private const string DefaultLanguage = "en";
 
         public static event Action Changed;
 
@@ -37,7 +38,7 @@ namespace Game.Settings
             Width = PlayerPrefs.GetInt(WidthKey, 0);
             Height = PlayerPrefs.GetInt(HeightKey, 0);
             BindingOverrides = PlayerPrefs.GetString(BindingsKey, string.Empty);
-            Language = PlayerPrefs.GetString(LanguageKey, DefaultLanguage());
+            Language = PlayerPrefs.GetString(LanguageKey, DefaultLanguage);
         }
 
         public static void Save()
@@ -81,12 +82,6 @@ namespace Game.Settings
         {
             Language = code;
             Changed?.Invoke();
-        }
-
-        // İlk açılışta sistem dili: Türkçe sistemde Türkçe, diğerlerinde İngilizce.
-        private static string DefaultLanguage()
-        {
-            return Application.systemLanguage == SystemLanguage.Turkish ? "tr" : "en";
         }
 
         // Tuş atamaları Input System'in kendi JSON biçiminde saklanır. Uygulayan SettingsPanel/Applier.

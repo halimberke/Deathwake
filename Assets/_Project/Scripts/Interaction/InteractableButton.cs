@@ -1,3 +1,4 @@
+using Game.Audio;
 using Game.Localization;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,6 +15,7 @@ namespace Game.Interaction
         [SerializeField] private bool isEnabled = true;
         [Tooltip("Açıksa düğme sadece bir kez çalışır.")]
         [SerializeField] private bool singleUse;
+        [SerializeField] private SoundSet pressSound;
 
         [SerializeField] private UnityEvent onPressed;
 
@@ -32,6 +34,7 @@ namespace Game.Interaction
         public void Interact(IInteractor interactor)
         {
             used = true;
+            Sfx.Play(pressSound, transform.position);
             onPressed.Invoke();
         }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Audio;
 using Game.Localization;
 using UnityEngine;
 using UnityEngine.Events;
@@ -22,6 +23,10 @@ namespace Game.Interaction
         [SerializeField] private Renderer indicator;
         [SerializeField] private Color idleColor = new Color(0.6f, 0.15f, 0.15f);
         [SerializeField] private Color pressedColor = new Color(0.2f, 0.9f, 0.3f);
+
+        [Header("Ses")]
+        [SerializeField] private SoundSet pressSound;
+        [SerializeField] private SoundSet releaseSound;
 
         [Header("Olaylar")]
         [SerializeField] private UnityEvent onPressed;
@@ -69,6 +74,7 @@ namespace Game.Interaction
             if (!wasPressed)
             {
                 UpdateVisual();
+                Sfx.Play(pressSound, transform.position);
                 onPressed.Invoke();
             }
         }
@@ -81,6 +87,7 @@ namespace Game.Interaction
             }
 
             UpdateVisual();
+            Sfx.Play(releaseSound, transform.position);
             onReleased.Invoke();
         }
 

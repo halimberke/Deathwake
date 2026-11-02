@@ -23,6 +23,12 @@ namespace Game.Flow
         [Tooltip("Oyuncu bu sahneye girdiğinde (oda başladığında). Senaryolar buradan başlatılır.")]
         [SerializeField] private UnityEvent onEntered;
 
+        [Header("Ses")]
+        [Tooltip("Oda boyunca çalan ortam sesi. Boşsa ortam susar.")]
+        [SerializeField] private AudioClip ambience;
+        [Range(0f, 1f)]
+        [SerializeField] private float ambienceVolume = 0.25f;
+
         [Header("Işık")]
         [Tooltip("Core'daki genel (yön) ışığın gücü. Gece ya da kapalı mekân için 0.")]
         [SerializeField] private float sunIntensity = 1.2f;
@@ -36,6 +42,8 @@ namespace Game.Flow
         public bool StartsBlack => startsBlack;
         public float SunIntensity => sunIntensity;
         public Color AmbientColor => ambientColor;
+        public AudioClip Ambience => ambience;
+        public float AmbienceVolume => ambienceVolume;
 
         public void NotifyEntered()
         {
